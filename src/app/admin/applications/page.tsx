@@ -1,356 +1,355 @@
-// app/admin/applications/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
+// import { useState } from "react";
+// import { useForm } from "react-hook-form";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { z } from "zod";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { Textarea } from "@/components/ui/textarea";
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from "@/components/ui/form";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogTitle,
+// } from "@/components/ui/dialog";
+// import { Badge } from "@/components/ui/badge";
 //import { DataTable, Column } from "@/components/admin/DataTable";
 
-import { Column, DataTable } from "@/components/admin/table/DataTable";
-import { toast } from "sonner";
-import { Mail, Phone, User, GraduationCap, MapPin } from "lucide-react";
-import { formatDate } from "@/lib/helpers";
+// import { Column, DataTable } from "@/components/admin/table/DataTable";
+// import { toast } from "sonner";
+// import { Mail, Phone, User, GraduationCap, MapPin } from "lucide-react";
+// import { formatDate } from "@/lib/helpers";
 
-const applicationSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone number is required"),
-  city: z.string().min(1, "City is required"),
-  nationality: z.string().min(1, "Nationality is required"),
-  country: z.string().min(1, "Preferred country is required"),
-  course: z.string().min(1, "Course of interest is required"),
-  budget: z.string().min(1, "Budget is required"),
-  qualification: z.string().min(1, "Educational qualification is required"),
-  message: z.string().optional(),
-  status: z.enum([
-    "new",
-    "reviewing",
-    "contacted",
-    "accepted",
-    "rejected",
-    "completed",
-  ]),
-  priority: z.enum(["low", "medium", "high"]),
-  assignedTo: z.string().optional(),
-  notes: z.string().optional(),
-});
+// const applicationSchema = z.object({
+//   firstName: z.string().min(1, "First name is required"),
+//   lastName: z.string().min(1, "Last name is required"),
+//   email: z.string().email("Invalid email address"),
+//   phone: z.string().min(1, "Phone number is required"),
+//   city: z.string().min(1, "City is required"),
+//   nationality: z.string().min(1, "Nationality is required"),
+//   country: z.string().min(1, "Preferred country is required"),
+//   course: z.string().min(1, "Course of interest is required"),
+//   budget: z.string().min(1, "Budget is required"),
+//   qualification: z.string().min(1, "Educational qualification is required"),
+//   message: z.string().optional(),
+//   status: z.enum([
+//     "new",
+//     "reviewing",
+//     "contacted",
+//     "accepted",
+//     "rejected",
+//     "completed",
+//   ]),
+//   priority: z.enum(["low", "medium", "high"]),
+//   assignedTo: z.string().optional(),
+//   notes: z.string().optional(),
+// });
 
-type ApplicationFormData = z.infer<typeof applicationSchema>;
+//type ApplicationFormData = z.infer<typeof applicationSchema>;
 
 // Mock data
-const mockApplications = [
-  {
-    id: 1,
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+234 901 234 5678",
-    city: "Lagos",
-    nationality: "Nigerian",
-    country: "United Kingdom",
-    course: "Computer Science",
-    budget: "$30,000 - $40,000",
-    qualification: "Bachelor's Degree in Engineering - 85%",
-    message:
-      "I am interested in pursuing a Master's degree in Computer Science in the UK. I have strong programming skills and research experience.",
-    status: "new",
-    priority: "medium",
-    assignedTo: "",
-    notes: "",
-    createdAt: new Date("2024-01-20"),
-    updatedAt: new Date("2024-01-20"),
-  },
-  {
-    id: 2,
-    firstName: "Sarah",
-    lastName: "Johnson",
-    email: "sarah.johnson@example.com",
-    phone: "+234 802 345 6789",
-    city: "Abuja",
-    nationality: "Nigerian",
-    country: "Canada",
-    course: "Business Administration",
-    budget: "$25,000 - $35,000",
-    qualification: "HND in Business Studies - 3.5 GPA",
-    message:
-      "Looking for MBA programs in Canada with good scholarship opportunities.",
-    status: "reviewing",
-    priority: "high",
-    assignedTo: "Admin User",
-    notes: "Potential candidate for scholarship program",
-    createdAt: new Date("2024-01-18"),
-    updatedAt: new Date("2024-01-19"),
-  },
-  {
-    id: 3,
-    firstName: "Michael",
-    lastName: "Chen",
-    email: "michael.chen@example.com",
-    phone: "+234 703 456 7890",
-    city: "Port Harcourt",
-    nationality: "Nigerian",
-    country: "United States",
-    course: "Medicine",
-    budget: "$50,000+",
-    qualification: "Bachelor's in Biology - First Class",
-    message:
-      "Interested in medical school programs in the USA. Have MCAT scores ready.",
-    status: "contacted",
-    priority: "high",
-    assignedTo: "Admin User",
-    notes: "Follow up scheduled for next week",
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date("2024-01-21"),
-  },
-];
+// const mockApplications = [
+//   {
+//     id: 1,
+//     firstName: "John",
+//     lastName: "Doe",
+//     email: "john.doe@example.com",
+//     phone: "+234 901 234 5678",
+//     city: "Lagos",
+//     nationality: "Nigerian",
+//     country: "United Kingdom",
+//     course: "Computer Science",
+//     budget: "$30,000 - $40,000",
+//     qualification: "Bachelor's Degree in Engineering - 85%",
+//     message:
+//       "I am interested in pursuing a Master's degree in Computer Science in the UK. I have strong programming skills and research experience.",
+//     status: "new",
+//     priority: "medium",
+//     assignedTo: "",
+//     notes: "",
+//     createdAt: new Date("2024-01-20"),
+//     updatedAt: new Date("2024-01-20"),
+//   },
+//   {
+//     id: 2,
+//     firstName: "Sarah",
+//     lastName: "Johnson",
+//     email: "sarah.johnson@example.com",
+//     phone: "+234 802 345 6789",
+//     city: "Abuja",
+//     nationality: "Nigerian",
+//     country: "Canada",
+//     course: "Business Administration",
+//     budget: "$25,000 - $35,000",
+//     qualification: "HND in Business Studies - 3.5 GPA",
+//     message:
+//       "Looking for MBA programs in Canada with good scholarship opportunities.",
+//     status: "reviewing",
+//     priority: "high",
+//     assignedTo: "Admin User",
+//     notes: "Potential candidate for scholarship program",
+//     createdAt: new Date("2024-01-18"),
+//     updatedAt: new Date("2024-01-19"),
+//   },
+//   {
+//     id: 3,
+//     firstName: "Michael",
+//     lastName: "Chen",
+//     email: "michael.chen@example.com",
+//     phone: "+234 703 456 7890",
+//     city: "Port Harcourt",
+//     nationality: "Nigerian",
+//     country: "United States",
+//     course: "Medicine",
+//     budget: "$50,000+",
+//     qualification: "Bachelor's in Biology - First Class",
+//     message:
+//       "Interested in medical school programs in the USA. Have MCAT scores ready.",
+//     status: "contacted",
+//     priority: "high",
+//     assignedTo: "Admin User",
+//     notes: "Follow up scheduled for next week",
+//     createdAt: new Date("2024-01-15"),
+//     updatedAt: new Date("2024-01-21"),
+//   },
+// ];
 
 export default function ApplicationsPage() {
-  const [applications, setApplications] = useState(mockApplications);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingApplication, setEditingApplication] = useState<any>(null);
-  const [viewMode, setViewMode] = useState(false);
+  // const [applications, setApplications] = useState(mockApplications);
+  // const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // const [editingApplication, setEditingApplication] = useState<any>(null);
+  // const [viewMode, setViewMode] = useState(false);
 
-  const form = useForm<ApplicationFormData>({
-    resolver: zodResolver(applicationSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      city: "",
-      nationality: "",
-      country: "",
-      course: "",
-      budget: "",
-      qualification: "",
-      message: "",
-      status: "new",
-      priority: "medium",
-      assignedTo: "",
-      notes: "",
-    },
-  });
+  // const form = useForm<ApplicationFormData>({
+  //   resolver: zodResolver(applicationSchema),
+  //   defaultValues: {
+  //     firstName: "",
+  //     lastName: "",
+  //     email: "",
+  //     phone: "",
+  //     city: "",
+  //     nationality: "",
+  //     country: "",
+  //     course: "",
+  //     budget: "",
+  //     qualification: "",
+  //     message: "",
+  //     status: "new",
+  //     priority: "medium",
+  //     assignedTo: "",
+  //     notes: "",
+  //   },
+  // });
 
-  const onSubmit = (data: ApplicationFormData) => {
-    if (editingApplication) {
-      setApplications((prev) =>
-        prev.map((app) =>
-          app.id === editingApplication.id
-            ? { ...app, ...data, updatedAt: new Date() }
-            : app
-        )
-      );
-      toast.success("Application updated successfully!");
-    } else {
-      const newApplication = {
-        id: Date.now(),
-        ...data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setApplications((prev) => [...prev, newApplication]);
-      toast.success("Application created successfully!");
-    }
+  // const onSubmit = (data: ApplicationFormData) => {
+  //   if (editingApplication) {
+  //     setApplications((prev) =>
+  //       prev.map((app) =>
+  //         app.id === editingApplication.id
+  //           ? { ...app, ...data, updatedAt: new Date() }
+  //           : app
+  //       )
+  //     );
+  //     toast.success("Application updated successfully!");
+  //   } else {
+  //     // const newApplication = {
+  //     //   id: Date.now(),
+  //     //   ...data,
+  //     //   createdAt: new Date(),
+  //     //   updatedAt: new Date(),
+  //     // };
+  //    // setApplications((prev) => [...prev, newApplication]);
+  //     toast.success("Application created successfully!");
+  //   }
 
-    form.reset();
-    setIsDialogOpen(false);
-    setEditingApplication(null);
-    setViewMode(false);
-  };
+  //   form.reset();
+  //   setIsDialogOpen(false);
+  //   setEditingApplication(null);
+  //   setViewMode(false);
+  // };
 
-  const handleEdit = (application: any) => {
-    setEditingApplication(application);
-    setViewMode(false);
-    form.reset(application);
-    setIsDialogOpen(true);
-  };
+  // const handleEdit = (application: any) => {
+  //   setEditingApplication(application);
+  //   setViewMode(false);
+  //   form.reset(application);
+  //   setIsDialogOpen(true);
+  // };
 
-  const handleView = (application: any) => {
-    setEditingApplication(application);
-    setViewMode(true);
-    form.reset(application);
-    setIsDialogOpen(true);
-  };
+  // const handleView = (application: any) => {
+  //   setEditingApplication(application);
+  //   setViewMode(true);
+  //   form.reset(application);
+  //   setIsDialogOpen(true);
+  // };
 
-  const handleDelete = (application: any) => {
-    setApplications((prev) => prev.filter((app) => app.id !== application.id));
-    toast.success("Application deleted successfully!");
-  };
+  // const handleDelete = (application: any) => {
+  //   setApplications((prev) => prev.filter((app) => app.id !== application.id));
+  //   toast.success("Application deleted successfully!");
+  // };
 
-  const handleAdd = () => {
-    setEditingApplication(null);
-    setViewMode(false);
-    form.reset();
-    setIsDialogOpen(true);
-  };
+  // const handleAdd = () => {
+  //   setEditingApplication(null);
+  //   setViewMode(false);
+  //   form.reset();
+  //   setIsDialogOpen(true);
+  // };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "new":
-        return "bg-blue-100 text-blue-800";
-      case "reviewing":
-        return "bg-yellow-100 text-yellow-800";
-      case "contacted":
-        return "bg-purple-100 text-purple-800";
-      case "accepted":
-        return "bg-green-100 text-green-800";
-      case "rejected":
-        return "bg-red-100 text-red-800";
-      case "completed":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case "new":
+  //       return "bg-blue-100 text-blue-800";
+  //     case "reviewing":
+  //       return "bg-yellow-100 text-yellow-800";
+  //     case "contacted":
+  //       return "bg-purple-100 text-purple-800";
+  //     case "accepted":
+  //       return "bg-green-100 text-green-800";
+  //     case "rejected":
+  //       return "bg-red-100 text-red-800";
+  //     case "completed":
+  //       return "bg-gray-100 text-gray-800";
+  //     default:
+  //       return "bg-gray-100 text-gray-800";
+  //   }
+  // };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800";
-      case "low":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  // const getPriorityColor = (priority: string) => {
+  //   switch (priority) {
+  //     case "high":
+  //       return "bg-red-100 text-red-800";
+  //     case "medium":
+  //       return "bg-yellow-100 text-yellow-800";
+  //     case "low":
+  //       return "bg-green-100 text-green-800";
+  //     default:
+  //       return "bg-gray-100 text-gray-800";
+  //   }
+  // };
 
-  const columns: Column[] = [
-    {
-      key: "firstName",
-      label: "Name",
-      sortable: true,
-      render: (value, row) => (
-        <div className="flex items-center">
-          <User className="h-4 w-4 mr-2" />
-          {`${row.firstName} ${row.lastName}`}
-        </div>
-      ),
-    },
-    {
-      key: "email",
-      label: "Email",
-      render: (value) => (
-        <div className="flex items-center">
-          <Mail className="h-4 w-4 mr-2" />
-          <span className="truncate max-w-xs">{value}</span>
-        </div>
-      ),
-    },
-    {
-      key: "phone",
-      label: "Phone",
-      render: (value) => (
-        <div className="flex items-center">
-          <Phone className="h-4 w-4 mr-2" />
-          {value}
-        </div>
-      ),
-    },
-    {
-      key: "country",
-      label: "Preferred Country",
-      render: (value) => (
-        <div className="flex items-center">
-          <MapPin className="h-4 w-4 mr-2" />
-          {value}
-        </div>
-      ),
-    },
-    {
-      key: "course",
-      label: "Course",
-      render: (value) => (
-        <div className="flex items-center">
-          <GraduationCap className="h-4 w-4 mr-2" />
-          <span className="truncate max-w-xs">{value}</span>
-        </div>
-      ),
-    },
-    {
-      key: "status",
-      label: "Status",
-      render: (value) => (
-        <Badge className={getStatusColor(value)}>{value}</Badge>
-      ),
-    },
-    {
-      key: "priority",
-      label: "Priority",
-      render: (value) => (
-        <Badge className={getPriorityColor(value)}>{value}</Badge>
-      ),
-    },
-    {
-      key: "createdAt",
-      label: "Applied",
-      sortable: true,
-      render: (value) => formatDate(value),
-    },
-  ];
+  // const columns: Column[] = [
+  //   {
+  //     key: "firstName",
+  //     label: "Name",
+  //     sortable: true,
+  //     render: (value, row) => (
+  //       <div className="flex items-center">
+  //         <User className="h-4 w-4 mr-2" />
+  //         {`${row.firstName} ${row.lastName}`}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "email",
+  //     label: "Email",
+  //     render: (value) => (
+  //       <div className="flex items-center">
+  //         <Mail className="h-4 w-4 mr-2" />
+  //         <span className="truncate max-w-xs">{value}</span>
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "phone",
+  //     label: "Phone",
+  //     render: (value) => (
+  //       <div className="flex items-center">
+  //         <Phone className="h-4 w-4 mr-2" />
+  //         {value}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "country",
+  //     label: "Preferred Country",
+  //     render: (value) => (
+  //       <div className="flex items-center">
+  //         <MapPin className="h-4 w-4 mr-2" />
+  //         {value}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "course",
+  //     label: "Course",
+  //     render: (value) => (
+  //       <div className="flex items-center">
+  //         <GraduationCap className="h-4 w-4 mr-2" />
+  //         <span className="truncate max-w-xs">{value}</span>
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "status",
+  //     label: "Status",
+  //     render: (value) => (
+  //       <Badge className={getStatusColor(value)}>{value}</Badge>
+  //     ),
+  //   },
+  //   {
+  //     key: "priority",
+  //     label: "Priority",
+  //     render: (value) => (
+  //       <Badge className={getPriorityColor(value)}>{value}</Badge>
+  //     ),
+  //   },
+  //   {
+  //     key: "createdAt",
+  //     label: "Applied",
+  //     sortable: true,
+  //     render: (value) => formatDate(value),
+  //   },
+  // ];
 
-  const filterOptions = [
-    {
-      key: "status",
-      label: "Status",
-      options: [
-        { value: "new", label: "New" },
-        { value: "reviewing", label: "Reviewing" },
-        { value: "contacted", label: "Contacted" },
-        { value: "accepted", label: "Accepted" },
-        { value: "rejected", label: "Rejected" },
-        { value: "completed", label: "Completed" },
-      ],
-    },
-    {
-      key: "priority",
-      label: "Priority",
-      options: [
-        { value: "high", label: "High" },
-        { value: "medium", label: "Medium" },
-        { value: "low", label: "Low" },
-      ],
-    },
-    {
-      key: "country",
-      label: "Country",
-      options: [
-        { value: "United Kingdom", label: "United Kingdom" },
-        { value: "United States", label: "United States" },
-        { value: "Canada", label: "Canada" },
-        { value: "Australia", label: "Australia" },
-      ],
-    },
-  ];
+  // const filterOptions = [
+  //   {
+  //     key: "status",
+  //     label: "Status",
+  //     options: [
+  //       { value: "new", label: "New" },
+  //       { value: "reviewing", label: "Reviewing" },
+  //       { value: "contacted", label: "Contacted" },
+  //       { value: "accepted", label: "Accepted" },
+  //       { value: "rejected", label: "Rejected" },
+  //       { value: "completed", label: "Completed" },
+  //     ],
+  //   },
+  //   {
+  //     key: "priority",
+  //     label: "Priority",
+  //     options: [
+  //       { value: "high", label: "High" },
+  //       { value: "medium", label: "Medium" },
+  //       { value: "low", label: "Low" },
+  //     ],
+  //   },
+  //   {
+  //     key: "country",
+  //     label: "Country",
+  //     options: [
+  //       { value: "United Kingdom", label: "United Kingdom" },
+  //       { value: "United States", label: "United States" },
+  //       { value: "Canada", label: "Canada" },
+  //       { value: "Australia", label: "Australia" },
+  //     ],
+  //   },
+  // ];
 
   return (
     <div className="space-y-8">
@@ -365,7 +364,7 @@ export default function ApplicationsPage() {
         </div>
       </div>
 
-      <DataTable
+      {/* <DataTable
         data={applications}
         columns={columns}
         title="Student Applications"
@@ -375,9 +374,9 @@ export default function ApplicationsPage() {
         onView={handleView}
         onDelete={handleDelete}
         filterOptions={filterOptions}
-      />
+      /> */}
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
@@ -740,7 +739,7 @@ export default function ApplicationsPage() {
             </form>
           </Form>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }

@@ -16,13 +16,13 @@ import {
   Calendar,
   FileText,
   MessageSquare,
-  Settings,
+  //Settings,
 } from "lucide-react";
 
 type MenuItem = {
   name: string;
   href: string;
-  icon: any;
+  icon: React.ElementType;
   submenu?: SubMenuItem[];
 };
 
@@ -37,21 +37,21 @@ const menuItems: MenuItem[] = [
     href: "/admin",
     icon: Home,
   },
-  {
-    name: "Home",
-    href: "/admin/banner",
-    icon: Home,
-    submenu: [
-      { name: "Banner", href: "/admin/banner" },
-      { name: "Scholarships", href: "/admin/scholarships" },
-      { name: "Overview", href: "/overview" },
-    ],
-  },
-  {
-    name: "Services",
-    href: "/admin/services",
-    icon: Settings,
-  },
+  // {
+  //   name: "Home",
+  //   href: "/admin/banner",
+  //   icon: Home,
+  //   submenu: [
+  //     { name: "Banner", href: "/admin/banner" },
+  //     { name: "Scholarships", href: "/admin/scholarships" },
+  //     { name: "Overview", href: "/overview" },
+  //   ],
+  // },
+  // {
+  //   name: "Services",
+  //   href: "/admin/services",
+  //   icon: Settings,
+  // },
   {
     name: "Countries",
     href: "/admin/countries",

@@ -6,15 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Users,
-  GraduationCap,
+  //GraduationCap,
   Award,
   MessageSquare,
   Calendar,
   FileText,
-  TrendingUp,
+  //TrendingUp,
   Globe,
   Mail,
-  Clock,
+  //Clock,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back! Here's what's happening with your consultancy.
+            Welcome back! Here is what is happening with your consultancy.
           </p>
         </div>
       </div>

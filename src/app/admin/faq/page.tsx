@@ -1,4 +1,3 @@
-// app/admin/faqs/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -27,14 +26,46 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, Column } from "@/components/admin/table/DataTable";
 import { toast } from "sonner";
-import { HelpCircle, Hash } from "lucide-react";
+import { HelpCircle, Loader2, X } from "lucide-react";
 import { formatDate } from "@/lib/helpers";
+import {
+  useCreateFaq,
+  useDeleteFaq,
+  useUpdateFaq,
+} from "@/hooks/admin/mutations/faq/useFaq";
+import { useFaq } from "@/hooks/admin/queries/faq";
+import { TableSkeleton } from "@/components/table/TableSkeleton";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+
+export interface IFaq {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  tags?: string;
+  order?: string;
+  status: "published" | "draft" | "archived";
+  helpful?: string;
+  notHelpful?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  // Index signature for DataTable compatibility
+  [key: string]: string | number | Date | undefined;
+}
 
 const faqSchema = z.object({
   question: z.string().min(1, "Question is required"),
@@ -47,7 +78,7 @@ const faqSchema = z.object({
   notHelpful: z.string().optional(),
 });
 
-type FaqFormData = z.infer<typeof faqSchema>;
+export type FaqFormData = z.infer<typeof faqSchema>;
 
 const categoryOptions = [
   { value: "general", label: "General" },
@@ -60,84 +91,16 @@ const categoryOptions = [
   { value: "documents", label: "Documents" },
 ];
 
-// Mock data based on the original FAQ content
-const mockFaqs = [
-  {
-    id: 1,
-    question: "What is Limitless Global Pathways?",
-    answer:
-      "Limitless Global Pathways is a comprehensive platform dedicated to helping students explore and pursue study abroad opportunities. We provide detailed information on universities, academic programs, scholarships, and application processes across various countries, along with essential tools and resources to guide you through every stage of your international education journey.",
-    category: "general",
-    tags: "platform, services, international education",
-    order: "1",
-    status: "published",
-    helpful: "25",
-    notHelpful: "2",
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date("2024-01-15"),
-  },
-  {
-    id: 2,
-    question: "How can Limitless Global Pathways help me study abroad?",
-    answer:
-      "We serve as your reliable guide by providing curated information about global institutions, connecting you with suitable programs, assisting with application processes, and offering ongoing support throughout your study abroad journey. Our platform is designed to help you make informed decisions with confidence.",
-    category: "general",
-    tags: "guidance, support, application assistance",
-    order: "2",
-    status: "published",
-    helpful: "31",
-    notHelpful: "1",
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date("2024-01-15"),
-  },
-  {
-    id: 3,
-    question: "Is your service free to use?",
-    answer:
-      "Please contact us directly for detailed information about our service offerings and any associated costs. We provide various levels of support to match different student needs and budgets.",
-    category: "costs",
-    tags: "pricing, costs, free service",
-    order: "3",
-    status: "published",
-    helpful: "18",
-    notHelpful: "5",
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date("2024-01-15"),
-  },
-  {
-    id: 4,
-    question: "What documents do I need for studying abroad?",
-    answer:
-      "Academic transcripts and certificates, Language proficiency test scores (IELTS, TOEFL, etc.), Statement of purpose or personal statement, Letters of recommendation, Passport and visa documentation, Financial statements or sponsorship letters, Portfolio (for creative programs)",
-    category: "documents",
-    tags: "requirements, transcripts, visa, financial proof",
-    order: "4",
-    status: "published",
-    helpful: "42",
-    notHelpful: "3",
-    createdAt: new Date("2024-01-12"),
-    updatedAt: new Date("2024-01-18"),
-  },
-  {
-    id: 5,
-    question: "Do you provide information about scholarships?",
-    answer:
-      "Yes, we maintain comprehensive information about scholarships available for international students, including government scholarships, university-specific awards, and private funding opportunities. Our scholarships section is regularly updated with new opportunities.",
-    category: "scholarships",
-    tags: "funding, financial aid, government scholarships",
-    order: "5",
-    status: "published",
-    helpful: "38",
-    notHelpful: "2",
-    createdAt: new Date("2024-01-10"),
-    updatedAt: new Date("2024-01-20"),
-  },
-];
-
 export default function FaqsPage() {
-  const [faqs, setFaqs] = useState(mockFaqs);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingFaq, setEditingFaq] = useState<any>(null);
+  const [editingFaq, setEditingFaq] = useState<IFaq | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteData, setDeleteData] = useState<IFaq | null>(null);
+
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [viewFaq, setViewFaq] = useState<IFaq | null>(null);
 
   const form = useForm<FaqFormData>({
     resolver: zodResolver(faqSchema),
@@ -153,52 +116,19 @@ export default function FaqsPage() {
     },
   });
 
-  const onSubmit = (data: FaqFormData) => {
-    if (editingFaq) {
-      setFaqs((prev) =>
-        prev.map((faq) =>
-          faq.id === editingFaq.id
-            ? { ...faq, ...data, updatedAt: new Date() }
-            : faq
-        )
-      );
-      toast.success("FAQ updated successfully!");
-    } else {
-      const newFaq = {
-        id: Date.now(),
-        ...data,
-        helpful: data.helpful || "0",
-        notHelpful: data.notHelpful || "0",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setFaqs((prev) => [...prev, newFaq]);
-      toast.success("FAQ created successfully!");
-    }
+  const { data: faqData, isLoading } = useFaq(currentPage, 10);
+  const faqs = faqData?.data || [];
 
-    form.reset();
-    setIsDialogOpen(false);
-    setEditingFaq(null);
-  };
+  const createFaq = useCreateFaq();
+  const updateFaq = useUpdateFaq();
+  const deleteFaq = useDeleteFaq();
 
-  const handleEdit = (faq: any) => {
-    setEditingFaq(faq);
-    form.reset(faq);
-    setIsDialogOpen(true);
-  };
+  const transformedFaqs: IFaq[] = faqs.map((faq: IFaq) => ({
+    ...faq,
+    id: faq._id ?? faq.id ?? "", // Ensure id is always a string (fallback to empty string if missing)
+  }));
 
-  const handleDelete = (faq: any) => {
-    setFaqs((prev) => prev.filter((f) => f.id !== faq.id));
-    toast.success("FAQ deleted successfully!");
-  };
-
-  const handleAdd = () => {
-    setEditingFaq(null);
-    form.reset();
-    setIsDialogOpen(true);
-  };
-
-  const columns: Column[] = [
+  const columns: Column<IFaq>[] = [
     {
       key: "question",
       label: "Question",
@@ -206,7 +136,9 @@ export default function FaqsPage() {
       render: (value) => (
         <div className="flex items-start max-w-md">
           <HelpCircle className="h-4 w-4 mr-2 mt-1 flex-shrink-0" />
-          <span className="font-medium">{value}</span>
+          <span className="font-medium">
+            {typeof value === "string" ? value : ""}
+          </span>
         </div>
       ),
     },
@@ -215,7 +147,7 @@ export default function FaqsPage() {
       label: "Category",
       render: (value) => (
         <Badge variant="outline" className="capitalize">
-          {value}
+          {typeof value === "string" ? value : ""}
         </Badge>
       ),
     },
@@ -232,39 +164,43 @@ export default function FaqsPage() {
                 : "outline"
           }
         >
-          {value}
+          {typeof value === "string" ? value : ""}
         </Badge>
       ),
     },
-    {
-      key: "order",
-      label: "Order",
-      render: (value) => (
-        <div className="flex items-center">
-          <Hash className="h-4 w-4 mr-1" />
-          {value || "N/A"}
-        </div>
-      ),
-    },
-    {
-      key: "helpful",
-      label: "Helpful",
-      render: (value) => (
-        <div className="text-green-600 font-medium">👍 {value || 0}</div>
-      ),
-    },
-    {
-      key: "notHelpful",
-      label: "Not Helpful",
-      render: (value) => (
-        <div className="text-red-600 font-medium">👎 {value || 0}</div>
-      ),
-    },
+    // {
+    //   key: "order",
+    //   label: "Order",
+    //   render: (value) => (
+    //     <div className="flex items-center">
+    //       <Hash className="h-4 w-4 mr-1" />
+    //       {typeof value === "string" && value ? value : "N/A"}
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   key: "helpful",
+    //   label: "Helpful",
+    //   render: (value) => (
+    //     <div className="text-green-600 font-medium">
+    //       👍 {typeof value === "string" && value ? value : 0}
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   key: "notHelpful",
+    //   label: "Not Helpful",
+    //   render: (value) => (
+    //     <div className="text-red-600 font-medium">
+    //       👎 {typeof value === "string" && value ? value : 0}
+    //     </div>
+    //   ),
+    // },
     {
       key: "updatedAt",
       label: "Last Updated",
       sortable: true,
-      render: (value) => formatDate(value),
+      render: (value) => formatDate(value as string),
     },
   ];
 
@@ -285,6 +221,67 @@ export default function FaqsPage() {
     },
   ];
 
+  const onSubmit = async (data: FaqFormData) => {
+    // if (editingFaq) {
+    //   // Update logic here
+    //   toast.success("FAQ updated successfully!");
+    // } else {
+    //   // Create logic here
+    //   toast.success("FAQ created successfully!");
+    // }
+    try {
+      if (editingFaq) {
+        const res = await updateFaq.mutateAsync({ data, id: editingFaq.id });
+        toast.success(res.message || "FAQ post has been updated successfully!");
+      } else {
+        const res = await createFaq.mutateAsync(data);
+        toast.success(res.message || "FAQ post has been created successfully!");
+      }
+    } catch (error) {
+      console.error("Error creating FAQ post:", error);
+      toast.error("Failed to create FAQ post");
+    }
+
+    form.reset();
+    setIsDialogOpen(false);
+    setEditingFaq(null);
+  };
+
+  const handleEdit = (faq: IFaq) => {
+    setEditingFaq(faq);
+    form.reset(faq);
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = (faq: IFaq) => {
+    // Delete logic here
+    setIsDeleteDialogOpen(true);
+    setDeleteData(faq);
+    // toast.success("FAQ deleted successfully!");
+  };
+  const handleDeleteFaq = async () => {
+    try {
+      const res = await deleteFaq.mutateAsync(deleteData?._id as string);
+      toast.success(res.message || "FAQ deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting FAQ:", error);
+      toast.error("Failed to delete blog");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteData(null);
+    }
+  };
+  const handleView = (faq: IFaq) => {
+    setViewFaq(faq);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleAdd = () => {
+    setEditingFaq(null);
+    form.reset();
+    setIsDialogOpen(true);
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -296,16 +293,23 @@ export default function FaqsPage() {
         </div>
       </div>
 
-      <DataTable
-        data={faqs}
-        columns={columns}
-        title="Frequently Asked Questions"
-        searchPlaceholder="Search FAQs..."
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        filterOptions={filterOptions}
-      />
+      {isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <DataTable<IFaq>
+          data={transformedFaqs}
+          columns={columns}
+          title="FAQs"
+          searchPlaceholder="Search FAQs..."
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+          filterOptions={filterOptions}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -494,6 +498,106 @@ export default function FaqsPage() {
           </Form>
         </DialogContent>
       </Dialog>
+      {/* Delete Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto items-center justify-center">
+          <DialogHeader>
+            <DialogTitle className="p-4 text">
+              Are you sure you want to delete this FAQ:
+              <span className="text-red-500">
+                {deleteData ? ` ${deleteData.question}` : ""}
+              </span>
+            </DialogTitle>
+            <DialogDescription className="ml-4">
+              This action cannot be undone. This will permanently delete the
+              FAQ.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex w-full ">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeleteFaq}
+              disabled={deleteFaq.isPending}
+              className="w-full"
+            >
+              Delete
+              {deleteFaq.isPending && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* View Drawer */}
+      <Drawer
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        direction="right"
+      >
+        {/* View Drawer */}
+        <Drawer
+          open={isViewDialogOpen}
+          onOpenChange={setIsViewDialogOpen}
+          direction="right"
+        >
+          <DrawerContent
+            className={`h-full top-0 right-0 left-auto mt-0 w-[500px] rounded-none`}
+          >
+            <div className="flex flex-col h-full">
+              <DrawerHeader className="flex items-center justify-between p-4 border-b">
+                <DrawerTitle>FAQ</DrawerTitle>
+                <DrawerClose asChild>
+                  <Button variant="ghost" size="sm">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DrawerClose>
+              </DrawerHeader>
+              <DrawerHeader>
+                <DrawerTitle className="text-xl font-bold">
+                  {viewFaq?.tags}
+                </DrawerTitle>
+                <DrawerDescription className="text-sm text-muted-foreground">
+                  {viewFaq?.category}
+                </DrawerDescription>
+              </DrawerHeader>
+              <div className="flex-1 p-4 overflow-y-auto">
+                <div className="my-2">
+                  <p className="font-semibold">Date Created:</p>
+                  <p>
+                    {viewFaq?.createdAt
+                      ? formatDate(viewFaq?.createdAt.toString())
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="my-2">
+                  <p className="font-semibold">Question:</p>
+                  <p>{viewFaq?.question}</p>
+                </div>
+
+                <div className="my-2">
+                  <p className="font-semibold">Answer:</p>
+                  <p>{viewFaq?.answer}</p>
+                </div>
+
+                <div className="my-2">
+                  <p className="font-semibold">Tags:</p>
+                  <p>{viewFaq?.tags}</p>
+                </div>
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      </Drawer>
     </div>
   );
 }

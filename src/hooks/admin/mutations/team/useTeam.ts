@@ -1,7 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosApi from "@/services/axiosApi";
-
-import { BlogFormData } from "@/app/admin/blog/page";
 import { TeamMemberFormData } from "@/app/admin/team/page";
 
 export const useCreateTeam = () => {
