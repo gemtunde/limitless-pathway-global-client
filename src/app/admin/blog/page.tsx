@@ -300,7 +300,6 @@ export default function BlogPage() {
 
   const handleView = (post: IBlog) => {
     setViewBlog(post);
-    console.log("View Blog:", post._id);
     setIsViewDialogOpen(true);
   };
 

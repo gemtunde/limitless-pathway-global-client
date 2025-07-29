@@ -1,4 +1,3 @@
-// app/admin/team/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -27,6 +26,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -34,8 +34,47 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DataTable, Column } from "@/components/admin/table/DataTable";
 import { toast } from "sonner";
-import { User, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2, X } from "lucide-react";
 import { formatDate } from "@/lib/helpers";
+import { useTeam } from "@/hooks/admin/queries/team";
+import { TableSkeleton } from "@/components/table/TableSkeleton";
+import {
+  useCreateTeam,
+  useDeleteTeam,
+  useUpdateTeam,
+} from "@/hooks/admin/mutations/team/useTeam";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+
+// Define the ITeam interface
+interface ITeam {
+  id: string;
+  //_id?: string;
+  name: string;
+  title: string;
+  department: string;
+  email: string;
+  phone: string;
+  location?: string;
+  bio?: string;
+  image?: string;
+  linkedIn?: string;
+  twitter?: string;
+  status: "active" | "inactive" | "on-leave";
+  joinDate: string;
+  skills?: string;
+  languages?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  // Index signature for DataTable compatibility
+  [key: string]: string | number | Date | undefined;
+}
 
 const teamMemberSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -62,7 +101,7 @@ const teamMemberSchema = z.object({
   languages: z.string().optional(),
 });
 
-type TeamMemberFormData = z.infer<typeof teamMemberSchema>;
+export type TeamMemberFormData = z.infer<typeof teamMemberSchema>;
 
 const departmentOptions = [
   { value: "management", label: "Management" },
@@ -75,68 +114,15 @@ const departmentOptions = [
   { value: "customer-support", label: "Customer Support" },
 ];
 
-// Mock data
-const mockTeamMembers = [
-  {
-    id: 1,
-    name: "Sule Farida",
-    title: "Project Management",
-    department: "project-management",
-    email: "farida@limitlessglobalpathways.com",
-    phone: "+234 901 234 5678",
-    location: "Lagos, Nigeria",
-    bio: "Experienced project manager with expertise in international education consulting.",
-    image: "/farida.jpeg",
-    linkedIn: "https://linkedin.com/in/sulefarida",
-    twitter: "@sulefarida",
-    status: "active",
-    joinDate: "2023-01-15",
-    skills: "Project Management, Team Leadership, Strategic Planning",
-    languages: "English, Hausa, French",
-    createdAt: new Date("2023-01-15"),
-  },
-  {
-    id: 2,
-    name: "Gloria Owusu Agyeman",
-    title: "Project Management",
-    department: "project-management",
-    email: "gloria@limitlessglobalpathways.com",
-    phone: "+234 802 345 6789",
-    location: "Accra, Ghana",
-    bio: "Dedicated project manager focused on student success and operational excellence.",
-    image: "/glria.avif",
-    linkedIn: "https://linkedin.com/in/gloriaagyeman",
-    twitter: "",
-    status: "active",
-    joinDate: "2023-02-01",
-    skills: "Project Management, Process Optimization, Student Relations",
-    languages: "English, Twi",
-    createdAt: new Date("2023-02-01"),
-  },
-  {
-    id: 3,
-    name: "Helen Idoko",
-    title: "Project Management",
-    department: "project-management",
-    email: "helen@limitlessglobalpathways.com",
-    phone: "+234 703 456 7890",
-    location: "Abuja, Nigeria",
-    bio: "Results-driven project manager with a passion for international education.",
-    image: "/helen.avif",
-    linkedIn: "https://linkedin.com/in/helenidoko",
-    twitter: "",
-    status: "active",
-    joinDate: "2023-03-01",
-    skills: "Project Management, Quality Assurance, Client Relations",
-    languages: "English, Igbo",
-    createdAt: new Date("2023-03-01"),
-  },
-];
-
 export default function TeamPage() {
-  const [teamMembers, setTeamMembers] = useState(mockTeamMembers);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<any>(null);
+  const [editingMember, setEditingMember] = useState<ITeam | null>(null);
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteData, setDeleteData] = useState<ITeam | null>(null);
+
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [viewTeam, setViewTeam] = useState<ITeam | null>(null);
 
   const form = useForm<TeamMemberFormData>({
     resolver: zodResolver(teamMemberSchema),
@@ -158,24 +144,42 @@ export default function TeamPage() {
     },
   });
 
-  const onSubmit = (data: TeamMemberFormData) => {
-    if (editingMember) {
-      setTeamMembers((prev) =>
-        prev.map((member) =>
-          member.id === editingMember.id
-            ? { ...member, ...data, updatedAt: new Date() }
-            : member
-        )
-      );
-      toast.success("Team member updated successfully!");
-    } else {
-      const newMember = {
-        id: Date.now(),
-        ...data,
-        createdAt: new Date(),
-      };
-      setTeamMembers((prev) => [...prev, newMember]);
-      toast.success("Team member added successfully!");
+  // Data fetching and mutations
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: teamData, isLoading } = useTeam(currentPage, 10);
+  const teams = teamData?.data || [];
+  console.log("Team data fetched:", teams);
+
+  // Import the mutations
+  const createTeam = useCreateTeam();
+  const updateTeam = useUpdateTeam();
+  const deleteTeam = useDeleteTeam();
+
+  // Transform data to ensure it has the required id field
+  const transformedTeams: ITeam[] = teams.map((team: ITeam) => ({
+    ...team,
+    id: team._id || team.id, // Ensure id field exists
+  }));
+
+  const onSubmit = async (data: TeamMemberFormData) => {
+    try {
+      if (editingMember) {
+        const res = await updateTeam.mutateAsync({
+          data,
+          id: editingMember.id,
+        });
+        toast.success(
+          res.message || "Team member has been updated successfully!"
+        );
+      } else {
+        const res = await createTeam.mutateAsync(data);
+        toast.success(
+          res.message || "Team member has been created successfully!"
+        );
+      }
+    } catch (error) {
+      console.error("Error creating team member:", error);
+      toast.error("Failed to create team member");
     }
 
     form.reset();
@@ -183,15 +187,49 @@ export default function TeamPage() {
     setEditingMember(null);
   };
 
-  const handleEdit = (member: any) => {
+  const handleEdit = (member: ITeam) => {
     setEditingMember(member);
-    form.reset(member);
+    form.reset({
+      name: member.name,
+      title: member.title,
+      department: member.department,
+      email: member.email,
+      phone: member.phone,
+      location: member.location || "",
+      bio: member.bio || "",
+      image: member.image || "",
+      linkedIn: member.linkedIn || "",
+      twitter: member.twitter || "",
+      status: member.status,
+      joinDate: member.joinDate,
+      skills: member.skills || "",
+      languages: member.languages || "",
+    });
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (member: any) => {
-    setTeamMembers((prev) => prev.filter((m) => m.id !== member.id));
-    toast.success("Team member removed successfully!");
+  const handleDelete = (member: ITeam) => {
+    // Handle delete logic here - you'll need to implement deleteTeam mutation
+    setIsDeleteDialogOpen(true);
+    setDeleteData(member);
+    //toast.success("Team member removed successfully!");
+  };
+
+  const handleDeleteTeam = async () => {
+    try {
+      const res = await deleteTeam.mutateAsync(deleteData?._id as string);
+      toast.success(res.message || "Team member deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting team member:", error);
+      toast.error("Failed to delete team member");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteData(null);
+    }
+  };
+  const handleView = (team: ITeam) => {
+    setViewTeam(team);
+    setIsViewDialogOpen(true);
   };
 
   const handleAdd = () => {
@@ -200,7 +238,7 @@ export default function TeamPage() {
     setIsDialogOpen(true);
   };
 
-  const columns: Column[] = [
+  const columns: Column<ITeam>[] = [
     {
       key: "name",
       label: "Member",
@@ -208,16 +246,16 @@ export default function TeamPage() {
       render: (value, row) => (
         <div className="flex items-center space-x-3">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={row.image} alt={value} />
+            <AvatarImage src={row.image} alt={value as string} />
             <AvatarFallback>
-              {value
+              {(value as string)
                 .split(" ")
                 .map((n: string) => n[0])
                 .join("")}
             </AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-medium">{value}</div>
+            <div className="font-medium">{value as string}</div>
             <div className="text-sm text-muted-foreground">{row.title}</div>
           </div>
         </div>
@@ -228,7 +266,7 @@ export default function TeamPage() {
       label: "Department",
       render: (value) => (
         <Badge variant="outline" className="capitalize">
-          {value.replace("-", " ")}
+          {(value as string).replace("-", " ")}
         </Badge>
       ),
     },
@@ -238,7 +276,7 @@ export default function TeamPage() {
       render: (value) => (
         <div className="flex items-center">
           <Mail className="h-4 w-4 mr-2" />
-          <span className="truncate max-w-xs">{value}</span>
+          <span className="truncate max-w-xs">{value as string}</span>
         </div>
       ),
     },
@@ -248,7 +286,7 @@ export default function TeamPage() {
       render: (value) => (
         <div className="flex items-center">
           <Phone className="h-4 w-4 mr-2" />
-          {value}
+          {value as string}
         </div>
       ),
     },
@@ -258,7 +296,7 @@ export default function TeamPage() {
       render: (value) => (
         <div className="flex items-center">
           <MapPin className="h-4 w-4 mr-2" />
-          {value || "Not specified"}
+          {(value as string) || "Not specified"}
         </div>
       ),
     },
@@ -275,7 +313,7 @@ export default function TeamPage() {
                 : "outline"
           }
         >
-          {value.replace("-", " ")}
+          {(value as string).replace("-", " ")}
         </Badge>
       ),
     },
@@ -283,7 +321,7 @@ export default function TeamPage() {
       key: "joinDate",
       label: "Join Date",
       sortable: true,
-      render: (value) => formatDate(value),
+      render: (value) => formatDate(value as string),
     },
   ];
 
@@ -304,6 +342,21 @@ export default function TeamPage() {
     },
   ];
 
+  // if (isLoading) {
+  //   return (
+  //     <div className="space-y-8">
+  //       <div className="flex items-center justify-between">
+  //         <div>
+  //           <h1 className="text-3xl font-bold tracking-tight">Team Management</h1>
+  //           <p className="text-muted-foreground">
+  //             Loading team members...
+  //           </p>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -315,16 +368,23 @@ export default function TeamPage() {
         </div>
       </div>
 
-      <DataTable
-        data={teamMembers}
-        columns={columns}
-        title="Team Members"
-        searchPlaceholder="Search team members..."
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        filterOptions={filterOptions}
-      />
+      {isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <DataTable<ITeam>
+          data={transformedTeams}
+          columns={columns}
+          title="Team Members"
+          searchPlaceholder="Search team members..."
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+          filterOptions={filterOptions}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -382,7 +442,7 @@ export default function TeamPage() {
                         <FormLabel>Department</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -413,7 +473,7 @@ export default function TeamPage() {
                         <FormLabel>Status</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -631,6 +691,114 @@ export default function TeamPage() {
           </Form>
         </DialogContent>
       </Dialog>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto items-center justify-center">
+          <DialogHeader>
+            <DialogTitle className="p-4 text">
+              Are you sure you want to delete this team member:
+              <span className="text-red-500">
+                {deleteData ? ` ${deleteData.name}` : ""}
+              </span>
+            </DialogTitle>
+            <DialogDescription className="ml-4">
+              This action cannot be undone. This will permanently delete the
+              team member.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex w-full ">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeleteTeam}
+              disabled={deleteTeam.isPending}
+              className="w-full"
+            >
+              Delete
+              {deleteTeam.isPending && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* View Drawer */}
+      <Drawer
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        direction="right"
+      >
+        {/* View Drawer */}
+        <Drawer
+          open={isViewDialogOpen}
+          onOpenChange={setIsViewDialogOpen}
+          direction="right"
+        >
+          <DrawerContent
+            className={`h-full top-0 right-0 left-auto mt-0 w-[500px] rounded-none`}
+          >
+            <div className="flex flex-col h-full">
+              <DrawerHeader className="flex items-center justify-between p-4 border-b">
+                <DrawerTitle>Team</DrawerTitle>
+                <DrawerClose asChild>
+                  <Button variant="ghost" size="sm">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DrawerClose>
+              </DrawerHeader>
+              <DrawerHeader>
+                <DrawerTitle className="text-xl font-bold">
+                  {viewTeam?.name}
+                </DrawerTitle>
+                <DrawerDescription className="text-sm text-muted-foreground">
+                  {viewTeam?.department}
+                </DrawerDescription>
+              </DrawerHeader>
+              <div className="flex-1 p-4 overflow-y-auto">
+                <div className="my-2">
+                  <p className="font-semibold">Date:</p>
+                  <p>
+                    {viewTeam?.joinDate
+                      ? formatDate(viewTeam?.joinDate as string)
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="my-2">
+                  <p className="font-semibold">Phone:</p>
+                  <p>{viewTeam?.phone}</p>
+                </div>
+
+                <div className="my-2">
+                  <p className="font-semibold">Bio:</p>
+                  <p>{viewTeam?.bio}</p>
+                </div>
+
+                <div className="my-2">
+                  <p className="font-semibold">Skills:</p>
+                  <p>{viewTeam?.skills}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline">{viewTeam?.status}</Badge>
+                </div>
+
+                <div className="my-2">
+                  <p className="font-semibold">Title:</p>
+                  <p>{viewTeam?.title}</p>
+                </div>
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      </Drawer>
     </div>
   );
 }
