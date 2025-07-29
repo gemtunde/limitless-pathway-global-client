@@ -1,4 +1,3 @@
-// app/admin/events/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -28,15 +27,40 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 //import { DataTable, Column } from "@/components/admin/DataTable";
 import { toast } from "sonner";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  //ExternalLink,
+  Loader2,
+  //MapPin,
+  Users,
+  X,
+} from "lucide-react";
 import { Column, DataTable } from "@/components/admin/table/DataTable";
 import { formatDate } from "@/lib/helpers";
+import { useEvents } from "@/hooks/admin/queries/events";
+import { TableSkeleton } from "@/components/table/TableSkeleton";
+import {
+  useCreateEvents,
+  useDeleteEvent,
+  useUpdateEvents,
+} from "@/hooks/admin/mutations/events/useEvents";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+//import Image from "next/image";
 
 const eventSchema = z.object({
   title: z.string().min(1, "Event title is required"),
@@ -57,86 +81,42 @@ const eventSchema = z.object({
   featuredImage: z.string().optional(),
 });
 
-type EventFormData = z.infer<typeof eventSchema>;
+export type EventFormData = z.infer<typeof eventSchema>;
 
-// Mock data
-const mockEvents = [
-  {
-    id: 1,
-    title: "UK Study Expo – Virtual Edition",
-    description:
-      "Join us for the UK Study Expo – Virtual Edition, a comprehensive online event designed to guide aspiring international students through the excitement and opportunities of studying in the UK.",
-    eventType: "virtual",
-    date: "2025-10-20",
-    time: "14:00",
-    duration: "2.5 hours",
-    location: "Online (Zoom)",
-    maxAttendees: "500",
-    registrationFee: "Free",
-    targetAudience:
-      "Secondary school graduates, University students, Parents/guardians, School counselors, Working professionals",
-    agenda:
-      "University presentations, Scholarship information, Visa guidance, Q&A sessions",
-    speakers:
-      "University representatives, Immigration experts, Former students",
-    requirements: "Stable internet connection, Zoom app",
-    registrationDeadline: "2025-10-18",
-    status: "published",
-    featuredImage: "/event-1.jpg",
-    createdAt: new Date("2024-01-15"),
-    registeredCount: 245,
-  },
-  {
-    id: 2,
-    title: "Canada Education Fair 2025",
-    description:
-      "Discover Canadian universities and colleges at our comprehensive education fair featuring top institutions from across Canada.",
-    eventType: "in-person",
-    date: "2025-11-15",
-    time: "10:00",
-    duration: "6 hours",
-    location: "Lagos Convention Centre, Nigeria",
-    maxAttendees: "1000",
-    registrationFee: "₦2,000",
-    targetAudience: "Students, Parents, Educators",
-    agenda: "University booths, Information sessions, One-on-one consultations",
-    speakers: "University admissions officers, Education consultants",
-    requirements: "Valid ID for entry",
-    registrationDeadline: "2025-11-10",
-    status: "published",
-    featuredImage: "/event-2.jpg",
-    createdAt: new Date("2024-01-10"),
-    registeredCount: 156,
-  },
-  {
-    id: 3,
-    title: "USA University Webinar Series",
-    description:
-      "Monthly webinar series featuring different USA universities and their programs.",
-    eventType: "virtual",
-    date: "2025-09-25",
-    time: "19:00",
-    duration: "1.5 hours",
-    location: "Online Platform",
-    maxAttendees: "200",
-    registrationFee: "Free",
-    targetAudience: "Prospective students interested in USA education",
-    agenda:
-      "University presentation, Program details, Application process, Q&A",
-    speakers: "University representatives",
-    requirements: "Internet connection, Device with audio/video capability",
-    registrationDeadline: "2025-09-23",
-    status: "draft",
-    featuredImage: "",
-    createdAt: new Date("2024-01-05"),
-    registeredCount: 0,
-  },
-];
+export interface IEvent {
+  id: string;
+  title: string;
+  description: string;
+  eventType: "virtual" | "in-person" | "hybrid";
+  date: string;
+  time: string;
+  duration: string;
+  location: string;
+  maxAttendees?: string;
+  registrationFee?: string;
+  targetAudience: string;
+  agenda?: string;
+  speakers?: string;
+  requirements?: string;
+  registrationDeadline?: string;
+  status: "draft" | "published" | "cancelled" | "completed";
+  featuredImage?: string;
+  createdAt: Date;
+  updatedAt?: Date;
+  registeredCount: number;
+  // Index signature for DataTable compatibility
+  [key: string]: string | number | Date | undefined;
+}
 
 export default function EventsPage() {
-  const [events, setEvents] = useState(mockEvents);
+  //const [events, setEvents] = useState<IEvent[]>(mockEvents);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<any>(null);
+  const [editingEvent, setEditingEvent] = useState<IEvent | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteData, setDeleteData] = useState<IEvent | null>(null);
+
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [viewEvent, setViewEvent] = useState<IEvent | null>(null);
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
@@ -160,25 +140,40 @@ export default function EventsPage() {
     },
   });
 
-  const onSubmit = (data: EventFormData) => {
-    if (editingEvent) {
-      setEvents((prev) =>
-        prev.map((event) =>
-          event.id === editingEvent.id
-            ? { ...event, ...data, updatedAt: new Date() }
-            : event
-        )
-      );
-      toast.success("Event updated successfully!");
-    } else {
-      const newEvent = {
-        id: Date.now(),
-        ...data,
-        createdAt: new Date(),
-        registeredCount: 0,
-      };
-      setEvents((prev) => [...prev, newEvent]);
-      toast.success("Event created successfully!");
+  // Data fetching and mutations
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: eventData, isLoading } = useEvents(currentPage, 10);
+  const event = eventData?.data || [];
+  console.log("Events data fetched:", event);
+
+  // Transform data to ensure it has the required id field
+  const transformedEvents: IEvent[] = event.map((event: IEvent) => ({
+    ...event,
+    id: event._id || event.id, // Ensure id field exists
+  }));
+
+  const createEvent = useCreateEvents();
+  const updateEvent = useUpdateEvents();
+  const deleteEvent = useDeleteEvent();
+  // Form submission handler
+  const onSubmit = async (data: EventFormData) => {
+    try {
+      if (editingEvent) {
+        const res = await updateEvent.mutateAsync({
+          data,
+          id: editingEvent.id,
+        });
+
+        toast.success(
+          res.message || "Scholarship has been updated successfully!"
+        );
+      } else {
+        const res = await createEvent.mutateAsync(data);
+        toast.success(res.message || "Event has been created successfully!");
+      }
+    } catch (error) {
+      console.error("Error creating event:", error);
+      toast.error("Failed to create event");
     }
 
     form.reset();
@@ -186,15 +181,33 @@ export default function EventsPage() {
     setEditingEvent(null);
   };
 
-  const handleEdit = (event: any) => {
+  const handleEdit = (event: IEvent) => {
     setEditingEvent(event);
     form.reset(event);
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (event: any) => {
-    setEvents((prev) => prev.filter((e) => e.id !== event.id));
-    toast.success("Event deleted successfully!");
+  const handleDelete = (event: IEvent) => {
+    setIsDeleteDialogOpen(true);
+    setDeleteData(event);
+    //toast.success("Event deleted successfully!");
+  };
+  const handleDeleteEvent = async () => {
+    try {
+      const res = await deleteEvent.mutateAsync(deleteData?._id as string);
+      toast.success(res.message || "Event has been deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting scholarship:", error);
+      toast.error("Failed to delete scholarship");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteData(null);
+    }
+  };
+  const handleView = (event: IEvent) => {
+    setViewEvent(event);
+    console.log("View Event:", event._id);
+    setIsViewDialogOpen(true);
   };
 
   const handleAdd = () => {
@@ -203,75 +216,97 @@ export default function EventsPage() {
     setIsDialogOpen(true);
   };
 
-  const columns: Column[] = [
+  const columns: Column<IEvent>[] = [
     { key: "title", label: "Event Title", sortable: true },
     {
       key: "eventType",
       label: "Type",
-      render: (value) => (
-        <Badge variant="outline" className="capitalize">
-          {value}
-        </Badge>
-      ),
+      render: (value: string | number | Date | undefined) => {
+        const eventType = value as "virtual" | "in-person" | "hybrid";
+        return (
+          <Badge variant="outline" className="capitalize">
+            {eventType}
+          </Badge>
+        );
+      },
     },
     {
       key: "date",
       label: "Date",
-      render: (value) => (
-        <div className="flex items-center">
-          <Calendar className="h-4 w-4 mr-1" />
-          {formatDate(value)}
-        </div>
-      ),
+      render: (value: string | number | Date | undefined) => {
+        const dateString = value as string;
+        return (
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 mr-1" />
+            {formatDate(dateString)}
+          </div>
+        );
+      },
     },
     {
       key: "time",
       label: "Time",
-      render: (value) => (
-        <div className="flex items-center">
-          <Clock className="h-4 w-4 mr-1" />
-          {value}
-        </div>
-      ),
+      render: (value: string | number | Date | undefined) => {
+        const timeString = value as string;
+        return (
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 mr-1" />
+            {timeString}
+          </div>
+        );
+      },
     },
-    {
-      key: "location",
-      label: "Location",
-      render: (value) => (
-        <div className="flex items-center max-w-xs truncate">
-          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-          {value}
-        </div>
-      ),
-    },
+    // {
+    //   key: "location",
+    //   label: "Location",
+    //   render: (value: string | number | Date | undefined) => {
+    //     const location = value as string;
+    //     return (
+    //       <div className="flex items-center max-w-xs truncate">
+    //         <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+    //         {location}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       key: "registeredCount",
       label: "Registered",
-      render: (value) => (
-        <div className="flex items-center">
-          <Users className="h-4 w-4 mr-1" />
-          {value}
-        </div>
-      ),
+      render: (value: string | number | Date | undefined) => {
+        const count = value as number;
+        return (
+          <div className="flex items-center">
+            <Users className="h-4 w-4 mr-1" />
+            {count}
+          </div>
+        );
+      },
     },
     {
       key: "status",
       label: "Status",
-      render: (value) => (
-        <Badge
-          variant={
-            value === "published"
-              ? "default"
-              : value === "draft"
-                ? "secondary"
-                : value === "cancelled"
-                  ? "destructive"
-                  : "outline"
-          }
-        >
-          {value}
-        </Badge>
-      ),
+      render: (value: string | number | Date | undefined) => {
+        const status = value as
+          | "draft"
+          | "published"
+          | "cancelled"
+          | "completed";
+        return (
+          <Badge
+            variant={
+              status === "published"
+                ? "primary"
+                : status === "draft"
+                  ? "secondary"
+                  : status === "cancelled"
+                    ? "destructive"
+                    : "outline"
+            }
+          >
+            {status}
+          </Badge>
+        );
+      },
     },
   ];
 
@@ -310,16 +345,23 @@ export default function EventsPage() {
         </div>
       </div>
 
-      <DataTable
-        data={events}
-        columns={columns}
-        title="Events"
-        searchPlaceholder="Search events..."
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        filterOptions={filterOptions}
-      />
+      {isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <DataTable<IEvent>
+          data={transformedEvents}
+          columns={columns}
+          title="Events"
+          searchPlaceholder="Search events..."
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+          filterOptions={filterOptions}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -650,6 +692,159 @@ export default function EventsPage() {
           </Form>
         </DialogContent>
       </Dialog>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto items-center justify-center">
+          <DialogHeader>
+            <DialogTitle className="p-4 text">
+              Are you sure you want to delete this scholarship:
+              <span className="text-red-500">
+                {deleteData ? ` ${deleteData.title}` : ""}
+              </span>
+            </DialogTitle>
+            <DialogDescription className="ml-4">
+              This action cannot be undone. This will permanently delete the
+              scholarship.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex w-full ">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeleteEvent}
+              disabled={deleteEvent.isPending}
+              className="w-full"
+            >
+              Delete
+              {deleteEvent.isPending && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* View Drawer */}
+      <Drawer
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        direction="right"
+      >
+        <DrawerContent
+          className={`h-full top-0 right-0 left-auto mt-0 w-[500px] rounded-none`}
+        >
+          <div className="flex flex-col h-full">
+            <DrawerHeader className="flex items-center justify-between p-4 border-b">
+              <DrawerTitle>Event</DrawerTitle>
+              <DrawerClose asChild>
+                <Button variant="ghost" size="sm">
+                  <X className="h-4 w-4" />
+                </Button>
+              </DrawerClose>
+            </DrawerHeader>
+            <DrawerHeader>
+              <DrawerTitle className="text-xl font-bold">
+                {viewEvent?.title}
+              </DrawerTitle>
+              <DrawerDescription className="text-sm text-muted-foreground">
+                {viewEvent?.eventType} • {viewEvent?.duration} •{" "}
+                {viewEvent?.location}
+              </DrawerDescription>
+              <DrawerDescription className="text-sm text-muted-foreground">
+                {formatDate(viewEvent?.date ? viewEvent.date.toString() : "")} •{" "}
+                {viewEvent?.time} • {viewEvent?.location}
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="flex-1 p-4 overflow-y-auto">
+              {/* {viewEvent?.featuredImage && (
+                <Image
+                  src={viewEvent.featuredImage}
+                  alt="Featured"
+                  className="w-full h-48 object-cover mb-4 rounded"
+                  width={500}
+                  height={200}
+                />
+              )} */}
+              <div className="my-2">
+                <p className="font-semibold">Agenda:</p>
+                <p>{viewEvent?.agenda}</p>
+              </div>
+
+              <div className="my-2">
+                <p className="font-semibold">Description:</p>
+                <p>{viewEvent?.description}</p>
+              </div>
+
+              <div className="my-2">
+                <p className="font-semibold">Requirements:</p>
+                <p>{viewEvent?.requirements}</p>
+              </div>
+
+              <div className="my-2">
+                <p className="font-semibold">Location:</p>
+                <p>{viewEvent?.location}</p>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Speakers:</p>
+                <p>{viewEvent?.speakers}</p>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Target Audience:</p>
+                <p>{viewEvent?.targetAudience}</p>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Registration Deadline:</p>
+                <p>{viewEvent?.registrationDeadline}</p>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Registration Fee:</p>
+                <p>{viewEvent?.registrationFee}</p>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Max Attendees:</p>
+                <p>{viewEvent?.maxAttendees}</p>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Status:</p>
+                <Badge
+                  variant={
+                    viewEvent?.status === "published"
+                      ? "default"
+                      : viewEvent?.status === "draft"
+                        ? "secondary"
+                        : viewEvent?.status === "cancelled"
+                          ? "destructive"
+                          : "outline"
+                  }
+                >
+                  {viewEvent?.status}
+                </Badge>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Created At:</p>
+                <p>
+                  {formatDate(
+                    viewEvent?.createdAt ? viewEvent.createdAt.toString() : ""
+                  )}
+                </p>
+              </div>
+              {viewEvent?.updatedAt && (
+                <div className="mt-2">
+                  <p className="font-semibold">Updated At:</p>
+                  <p>{formatDate(viewEvent.updatedAt.toString())}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

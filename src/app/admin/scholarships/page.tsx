@@ -127,10 +127,10 @@ const statusOptions = [
 export default function ScholarshipsPage() {
   // Dialog states
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteData, setDeleteData] = useState<Scholarship | null>(null);
-  // Data states
+
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [viewScholarship, setViewScholarship] = useState<Scholarship | null>(
     null
   );
@@ -219,7 +219,6 @@ export default function ScholarshipsPage() {
   const handleDelete = (scholarship: Scholarship) => {
     setIsDeleteDialogOpen(true);
     setDeleteData(scholarship);
-    console.log("DELETE Scholarship:", scholarship);
   };
 
   const handleDeleteScholarship = async () => {
