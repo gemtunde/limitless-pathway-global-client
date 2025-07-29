@@ -1,4 +1,3 @@
-// app/admin/countries/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -20,6 +19,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -29,6 +29,22 @@ import { toast } from "sonner";
 import Flag from "react-world-flags";
 import { Column, DataTable } from "@/components/admin/table/DataTable";
 import { formatDate } from "@/lib/helpers";
+import { useCountries } from "@/hooks/admin/queries/countries";
+import {
+  useCreateCountries,
+  useDeleteCountries,
+  useUpdateCountries,
+} from "@/hooks/admin/mutations/countries/useCountries";
+import { TableSkeleton } from "@/components/table/TableSkeleton";
+import { ExternalLink, Loader2, X } from "lucide-react";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 const countrySchema = z.object({
   name: z.string().min(1, "Country name is required"),
@@ -46,61 +62,42 @@ const countrySchema = z.object({
   languageRequirements: z.string().optional(),
 });
 
-type CountryFormData = z.infer<typeof countrySchema>;
+export type CountryFormData = z.infer<typeof countrySchema>;
 
-// Mock data
-const mockCountries = [
-  {
-    id: 1,
-    name: "United States",
-    slug: "united-states",
-    flagCode: "US",
-    description: "World-class universities offering diverse courses.",
-    benefits: "Quality Education, Research Opportunities, Career Prospects",
-    scholarships: "Fulbright, Merit-based scholarships",
-    visaRequirements: "F-1 Student Visa, Financial proof, I-20 form",
-    popularUniversities: "Harvard, MIT, Stanford",
-    costOfLiving: "$15,000 - $25,000 per year",
-    languageRequirements: "TOEFL/IELTS required",
-    createdAt: new Date("2024-01-15"),
-    status: "active",
-  },
-  {
-    id: 2,
-    name: "United Kingdom",
-    slug: "united-kingdom",
-    flagCode: "GB",
-    description: "Home to historic universities with a global reputation.",
-    benefits: "World-renowned education, Cultural diversity, English-speaking",
-    scholarships: "Chevening, Commonwealth scholarships",
-    visaRequirements: "Student Visa, CAS, Financial proof",
-    popularUniversities: "Oxford, Cambridge, Imperial College",
-    costOfLiving: "£12,000 - £20,000 per year",
-    languageRequirements: "IELTS/TOEFL required",
-    createdAt: new Date("2024-01-10"),
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Canada",
-    slug: "canada",
-    flagCode: "CA",
-    description: "Known for quality education and multicultural diversity.",
-    benefits: "Affordable tuition, Work opportunities, Immigration pathways",
-    scholarships: "Vanier CGS, Provincial scholarships",
-    visaRequirements: "Study Permit, Letter of acceptance, Financial proof",
-    popularUniversities: "University of Toronto, UBC, McGill",
-    costOfLiving: "$10,000 - $18,000 per year",
-    languageRequirements: "IELTS/TOEFL required",
-    createdAt: new Date("2024-01-05"),
-    status: "active",
-  },
-];
+export interface Country {
+  id: string;
+  name: string;
+  slug: string;
+  flagCode: string;
+  description: string;
+  benefits: string;
+  scholarships: string;
+  visaRequirements: string;
+  popularUniversities: string;
+  costOfLiving: string;
+  languageRequirements: string;
+  createdAt: Date;
+  updatedAt?: Date;
+  status: "active" | "inactive";
+  // Optional fields that might be present in view data
+  _id?: string | number;
+  code?: string;
+  region?: string;
+  population?: string;
+  applicationUrl?: string;
+  // Index signature for DataTable compatibility
+  [key: string]: string | number | Date | undefined;
+}
 
 export default function CountriesPage() {
-  const [countries, setCountries] = useState(mockCountries);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingCountry, setEditingCountry] = useState<any>(null);
+  const [editingCountry, setEditingCountry] = useState<Country | null>(null);
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteData, setDeleteData] = useState<Country | null>(null);
+
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [viewCountry, setViewCountry] = useState<Country | null>(null);
 
   const form = useForm<CountryFormData>({
     resolver: zodResolver(countrySchema),
@@ -118,25 +115,84 @@ export default function CountriesPage() {
     },
   });
 
-  const onSubmit = (data: CountryFormData) => {
-    if (editingCountry) {
-      setCountries((prev) =>
-        prev.map((country) =>
-          country.id === editingCountry.id
-            ? { ...country, ...data, updatedAt: new Date() }
-            : country
-        )
-      );
-      toast.success("Country updated successfully!");
-    } else {
-      const newCountry = {
-        id: Date.now(),
-        ...data,
-        createdAt: new Date(),
-        status: "active",
-      };
-      setCountries((prev) => [...prev, newCountry]);
-      toast.success("Country created successfully!");
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: countryData, isLoading } = useCountries(currentPage, 10);
+
+  // Define a more flexible API response type
+  interface ApiCountryResponse {
+    _id?: number;
+    id?: number;
+    name?: string;
+    slug?: string;
+    flagCode?: string;
+    description?: string;
+    benefits?: string;
+    scholarships?: string;
+    visaRequirements?: string;
+    popularUniversities?: string;
+    costOfLiving?: string;
+    languageRequirements?: string;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
+    status?: "active" | "inactive" | string;
+    code?: string;
+    region?: string;
+    population?: string;
+    applicationUrl?: string;
+  }
+
+  const apiCountries: ApiCountryResponse[] = countryData?.data || [];
+  console.log("Country Data:", countryData);
+
+  // Transform data to ensure it has the required id field and correct status type
+  const transformedCountries: Country[] = apiCountries.map((country) => ({
+    id:
+      country._id?.toString() ??
+      country.id?.toString() ??
+      Date.now().toString(),
+    name: country.name ?? "",
+    slug: country.slug ?? "",
+    flagCode: country.flagCode ?? "",
+    description: country.description ?? "",
+    benefits: country.benefits ?? "",
+    scholarships: country.scholarships ?? "",
+    visaRequirements: country.visaRequirements ?? "",
+    popularUniversities: country.popularUniversities ?? "",
+    costOfLiving: country.costOfLiving ?? "",
+    languageRequirements: country.languageRequirements ?? "",
+    createdAt: country.createdAt ? new Date(country.createdAt) : new Date(),
+    updatedAt: country.updatedAt ? new Date(country.updatedAt) : undefined,
+    status: country.status === "active" ? "active" : "inactive",
+    // Include optional fields if they exist
+    _id: country._id,
+    code: country.code,
+    region: country.region,
+    population: country.population,
+    applicationUrl: country.applicationUrl,
+  }));
+
+  // Mutations
+  const createCountry = useCreateCountries();
+  const updateCountry = useUpdateCountries();
+  const deleteCountry = useDeleteCountries();
+
+  const onSubmit = async (data: CountryFormData) => {
+    try {
+      if (editingCountry) {
+        const res = await updateCountry.mutateAsync({
+          data,
+          id: editingCountry.id,
+        });
+        toast.success(res.message || "Country has been updated successfully!");
+        console.log("EDIT Country updated:", data);
+        console.log("EDIT Country response:", res);
+      } else {
+        const res = await createCountry.mutateAsync(data);
+        toast.success(res.message || "Country has been created successfully!");
+      }
+    } catch (error) {
+      console.error("Error creating country:", error);
+      toast.error("Failed to create country");
     }
 
     form.reset();
@@ -144,51 +200,92 @@ export default function CountriesPage() {
     setEditingCountry(null);
   };
 
-  const handleEdit = (country: any) => {
+  const handleEdit = (country: Country) => {
     setEditingCountry(country);
     form.reset(country);
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (country: any) => {
-    setCountries((prev) => prev.filter((c) => c.id !== country.id));
-    toast.success("Country deleted successfully!");
+  const handleView = (country: Country) => {
+    setViewCountry(country);
+    console.log("View Country:", country._id);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleDelete = (country: Country) => {
+    setIsDeleteDialogOpen(true);
+    setDeleteData(country);
+    console.log("Deleting country:", country);
+  };
+
+  const handleDeleteCountry = async () => {
+    try {
+      const res = await deleteCountry.mutateAsync(deleteData?.id as string);
+      toast.success(res.message || "Country deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting country:", error);
+      toast.error("Failed to delete country");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteData(null);
+    }
   };
 
   const handleAdd = () => {
     setEditingCountry(null);
-    form.reset();
+    form.reset({
+      name: "",
+      slug: "",
+      flagCode: "",
+      description: "",
+      benefits: "",
+      scholarships: "",
+      visaRequirements: "",
+      popularUniversities: "",
+      costOfLiving: "",
+      languageRequirements: "",
+    });
+
     setIsDialogOpen(true);
   };
 
-  const columns: Column[] = [
+  const columns: Column<Country>[] = [
     {
       key: "flagCode",
       label: "Flag",
-      render: (value) => (
-        <Flag code={value} style={{ width: 32, height: 20 }} />
-      ),
+      render: (value: string | number | Date | undefined) => {
+        const flagCode = value as string;
+        return <Flag code={flagCode} style={{ width: 32, height: 20 }} />;
+      },
     },
     { key: "name", label: "Country", sortable: true },
     {
       key: "description",
       label: "Description",
-      render: (value) => <div className="max-w-xs truncate">{value}</div>,
+      render: (value: string | number | Date | undefined) => {
+        const description = value as string;
+        return <div className="max-w-xs truncate">{description}</div>;
+      },
     },
     {
       key: "status",
       label: "Status",
-      render: (value) => (
-        <Badge variant={value === "active" ? "default" : "secondary"}>
-          {value}
-        </Badge>
-      ),
+      render: (value: string | number | Date | undefined) => {
+        const status = value as "active" | "inactive";
+        return (
+          <Badge variant={status === "active" ? "default" : "secondary"}>
+            {status}
+          </Badge>
+        );
+      },
     },
     {
       key: "createdAt",
       label: "Created",
       sortable: true,
-      render: (value) => formatDate(value),
+      render: (value: string | number | Date | undefined) => {
+        return formatDate(value as string);
+      },
     },
   ];
 
@@ -216,16 +313,23 @@ export default function CountriesPage() {
         </div>
       </div>
 
-      <DataTable
-        data={countries}
-        columns={columns}
-        title="Study Destinations"
-        searchPlaceholder="Search countries..."
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        filterOptions={filterOptions}
-      />
+      {isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <DataTable<Country>
+          data={transformedCountries}
+          columns={columns}
+          title="Countries"
+          searchPlaceholder="Search countries..."
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+          filterOptions={filterOptions}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -427,14 +531,146 @@ export default function CountriesPage() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingCountry ? "Update Country" : "Create Country"}
+
+                <Button type="submit" disabled={createCountry.isPending}>
+                  {editingCountry ? (
+                    updateCountry.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Updating...
+                      </>
+                    ) : (
+                      "Update Country"
+                    )
+                  ) : createCountry.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Country"
+                  )}
                 </Button>
               </div>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto items-center justify-center">
+          <DialogHeader>
+            <DialogTitle className="p-4 text">
+              Are you sure you want to delete this country:
+              <span className="text-red-500">
+                {deleteData ? ` ${deleteData.name}` : ""}
+              </span>
+            </DialogTitle>
+            <DialogDescription className="ml-4">
+              This action cannot be undone. This will permanently delete the
+              country.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex w-full ">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeleteCountry}
+              disabled={deleteCountry.isPending}
+              className="w-full"
+            >
+              Delete
+              {deleteCountry.isPending && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Drawer */}
+      <Drawer
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        direction="right"
+      >
+        <DrawerContent
+          className={`h-full top-0 right-0 left-auto mt-0 w-[500px] rounded-none`}
+        >
+          <div className="flex flex-col h-full">
+            <DrawerHeader className="flex items-center justify-between p-4 border-b">
+              <DrawerTitle>Countries</DrawerTitle>
+              <DrawerClose asChild>
+                <Button variant="ghost" size="sm">
+                  <X className="h-4 w-4" />
+                </Button>
+              </DrawerClose>
+            </DrawerHeader>
+            <DrawerHeader>
+              <DrawerTitle className="text-xl font-bold mx-2">
+                {viewCountry?.name}
+                <Badge variant="outline">{viewCountry?.status}</Badge>
+              </DrawerTitle>
+              <DrawerDescription className="text-sm text-muted-foreground">
+                {viewCountry?.code} • {viewCountry?.region} •{" "}
+                {viewCountry?.population}
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="flex-1 p-4 overflow-y-auto">
+              <div className="my-2">
+                <p className="font-semibold">Cost Of Living:</p>
+                <p>{viewCountry?.costOfLiving}</p>
+              </div>
+
+              <div className="my-2">
+                <p className="font-semibold">Description:</p>
+                <p>{viewCountry?.description}</p>
+              </div>
+
+              <div className="my-2">
+                <p className="font-semibold">Language Requirements:</p>
+                <p>{viewCountry?.languageRequirements}</p>
+              </div>
+
+              <div className="my-2">
+                <p className="font-semibold">Scholarships:</p>
+                <p>{viewCountry?.scholarships}</p>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Popular Universities:</p>
+                <p>{viewCountry?.popularUniversities}</p>
+              </div>
+              <div className="my-2">
+                <p className="font-semibold">Benefits:</p>
+                <p>{viewCountry?.benefits}</p>
+              </div>
+              {viewCountry?.applicationUrl && (
+                <div className="pt-4">
+                  <Button asChild variant="link" className="text-blue-600 p-0">
+                    <a
+                      href={viewCountry?.applicationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Apply Now <ExternalLink className="ml-1 h-4 w-4" />
+                    </a>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

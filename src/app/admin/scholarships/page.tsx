@@ -26,15 +26,37 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, DollarSign } from "lucide-react";
-import { Column, DataTable } from "@/components/admin/table/DataTable";
+import { Calendar, DollarSign, ExternalLink, Loader2, X } from "lucide-react";
+import {
+  Column,
+  DataTable,
+  BaseTableData,
+  FilterOption,
+} from "@/components/admin/table/DataTable";
 import { formatDate } from "@/lib/helpers";
+import { useScholarships } from "@/hooks/admin/queries/scholarships";
+import { TableSkeleton } from "@/components/table/TableSkeleton";
+import {
+  useCreateScholarships,
+  useDeleteScholarship,
+  useUpdateScholarships,
+} from "@/hooks/admin/mutations/scholarships/useScholarships";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
+// Zod schema for form validation
 const scholarshipSchema = z.object({
   title: z.string().min(1, "Title is required"),
   provider: z.string().min(1, "Provider is required"),
@@ -54,10 +76,12 @@ const scholarshipSchema = z.object({
   status: z.string().min(1, "Status is required"),
 });
 
-type ScholarshipFormData = z.infer<typeof scholarshipSchema>;
+export type ScholarshipFormData = z.infer<typeof scholarshipSchema>;
 
-type Scholarship = {
-  id: number;
+// TypeScript interface for Scholarship data that extends BaseTableData
+export interface Scholarship extends BaseTableData {
+  id: string;
+  _id: string;
   title: string;
   provider: string;
   amount: string;
@@ -69,11 +93,12 @@ type Scholarship = {
   benefits: string;
   category: string;
   applicationUrl: string;
-  status: string;
+  status: "active" | "inactive" | "expired";
   createdAt: Date;
-  updatedAt?: Date;
-};
+  updatedAt: Date;
+}
 
+// Options for form selects
 const categoryOptions = [
   { value: "Research", label: "Research" },
   { value: "Leadership", label: "Leadership" },
@@ -99,32 +124,21 @@ const statusOptions = [
   { value: "expired", label: "Expired" },
 ];
 
-const mockScholarships: Scholarship[] = [
-  {
-    id: 1,
-    title: "Fulbright U.S. Student Program",
-    provider: "U.S. State Department",
-    amount: "Full funding",
-    deadline: "2025-10-01",
-    location: "United States",
-    level: "Graduate",
-    description: "...",
-    requirements: "...",
-    benefits: "...",
-    category: "Research",
-    applicationUrl: "https://us.fulbrightonline.org/",
-    status: "active",
-    createdAt: new Date("2024-01-15"),
-  },
-];
-
 export default function ScholarshipsPage() {
-  const [scholarships, setScholarships] =
-    useState<Scholarship[]>(mockScholarships);
+  // Dialog states
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteData, setDeleteData] = useState<Scholarship | null>(null);
+  // Data states
+  const [viewScholarship, setViewScholarship] = useState<Scholarship | null>(
+    null
+  );
   const [editingScholarship, setEditingScholarship] =
     useState<Scholarship | null>(null);
+  const [editId, setEditId] = useState<string>("");
 
+  // Form setup
   const form = useForm<ScholarshipFormData>({
     resolver: zodResolver(scholarshipSchema),
     defaultValues: {
@@ -143,25 +157,41 @@ export default function ScholarshipsPage() {
     },
   });
 
-  const onSubmit = (data: ScholarshipFormData) => {
-    if (editingScholarship) {
-      setScholarships((prev) =>
-        prev.map((s) =>
-          s.id === editingScholarship.id
-            ? { ...s, ...data, updatedAt: new Date() }
-            : s
-        )
-      );
-      toast.success("Scholarship updated successfully!");
-    } else {
-      const newScholarship: Scholarship = {
-        id: Date.now(),
-        ...data,
-        applicationUrl: data.applicationUrl || "",
-        createdAt: new Date(),
-      };
-      setScholarships((prev) => [...prev, newScholarship]);
-      toast.success("Scholarship created successfully!");
+  // Data fetching and mutations
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: scholarshipData, isLoading } = useScholarships(currentPage, 10);
+  const scholarships = scholarshipData?.data || [];
+
+  const createScholarship = useCreateScholarships();
+  const updateScholarship = useUpdateScholarships();
+  const deleteScholarship = useDeleteScholarship();
+
+  // Transform data to ensure it has the required id field
+  const transformedScholarships: Scholarship[] = scholarships.map(
+    (scholarship: Scholarship) => ({
+      ...scholarship,
+      id: scholarship._id || scholarship.id, // Ensure id field exists
+    })
+  );
+
+  // Form submission handler
+  const onSubmit = async (data: ScholarshipFormData) => {
+    try {
+      if (editingScholarship) {
+        const res = await updateScholarship.mutateAsync({ data, id: editId });
+
+        toast.success(
+          res.message || "Scholarship has been updated successfully!"
+        );
+      } else {
+        const res = await createScholarship.mutateAsync(data);
+        toast.success(
+          res.message || "Scholarship has been created successfully!"
+        );
+      }
+    } catch (error) {
+      console.error("Error creating scholarship:", error);
+      toast.error("Failed to create scholarship");
     }
 
     form.reset();
@@ -169,7 +199,9 @@ export default function ScholarshipsPage() {
     setEditingScholarship(null);
   };
 
+  // Event handlers for table actions
   const handleEdit = (scholarship: Scholarship) => {
+    setEditId(scholarship._id);
     setEditingScholarship(scholarship);
     form.reset({
       ...scholarship,
@@ -178,9 +210,31 @@ export default function ScholarshipsPage() {
     setIsDialogOpen(true);
   };
 
+  const handleView = (scholarship: Scholarship) => {
+    setViewScholarship(scholarship);
+    console.log("View Scholarship:", scholarship._id);
+    setIsViewDialogOpen(true);
+  };
+
   const handleDelete = (scholarship: Scholarship) => {
-    setScholarships((prev) => prev.filter((s) => s.id !== scholarship.id));
-    toast.success("Scholarship deleted successfully!");
+    setIsDeleteDialogOpen(true);
+    setDeleteData(scholarship);
+    console.log("DELETE Scholarship:", scholarship);
+  };
+
+  const handleDeleteScholarship = async () => {
+    try {
+      const res = await deleteScholarship.mutateAsync(
+        deleteData?._id as string
+      );
+      toast.success(res.message || "Scholarship deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting scholarship:", error);
+      toast.error("Failed to delete scholarship");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteData(null);
+    }
   };
 
   const handleAdd = () => {
@@ -202,7 +256,8 @@ export default function ScholarshipsPage() {
     setIsDialogOpen(true);
   };
 
-  const columns: Column[] = [
+  // Column definitions with proper typing
+  const columns: Column<Scholarship>[] = [
     { key: "title", label: "Title", sortable: true },
     { key: "provider", label: "Provider", sortable: true },
     {
@@ -211,7 +266,7 @@ export default function ScholarshipsPage() {
       render: (value) => (
         <div className="flex items-center">
           <DollarSign className="h-4 w-4 mr-1" />
-          {value}
+          {String(value)}
         </div>
       ),
     },
@@ -221,7 +276,7 @@ export default function ScholarshipsPage() {
       render: (value) => (
         <div className="flex items-center">
           <Calendar className="h-4 w-4 mr-1" />
-          {value}
+          {String(value)}
         </div>
       ),
     },
@@ -230,34 +285,38 @@ export default function ScholarshipsPage() {
     {
       key: "category",
       label: "Category",
-      render: (value) => <Badge variant="outline">{value}</Badge>,
+      render: (value) => <Badge variant="outline">{String(value)}</Badge>,
     },
     {
       key: "status",
       label: "Status",
-      render: (value) => (
-        <Badge
-          variant={
-            value === "active"
-              ? "default"
-              : value === "expired"
-                ? "destructive"
-                : "secondary"
-          }
-        >
-          {value}
-        </Badge>
-      ),
+      render: (value) => {
+        const status = String(value) as "active" | "inactive" | "expired";
+        return (
+          <Badge
+            variant={
+              status === "active"
+                ? "default"
+                : status === "expired"
+                  ? "destructive"
+                  : "secondary"
+            }
+          >
+            {status}
+          </Badge>
+        );
+      },
     },
     {
       key: "createdAt",
       label: "Created",
       sortable: true,
-      render: (value) => formatDate(value),
+      render: (value) => formatDate(value as string),
     },
   ];
 
-  const filterOptions = [
+  // Filter options for the table
+  const filterOptions: FilterOption[] = [
     { key: "status", label: "Status", options: statusOptions },
     { key: "category", label: "Category", options: categoryOptions },
     { key: "level", label: "Level", options: levelOptions },
@@ -276,17 +335,25 @@ export default function ScholarshipsPage() {
         </div>
       </div>
 
-      <DataTable
-        data={scholarships}
-        columns={columns}
-        title="Scholarships"
-        searchPlaceholder="Search scholarships..."
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        filterOptions={filterOptions}
-      />
+      {isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <DataTable<Scholarship>
+          data={transformedScholarships}
+          columns={columns}
+          title="Scholarships"
+          searchPlaceholder="Search scholarships..."
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+          filterOptions={filterOptions}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
 
+      {/* Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -404,7 +471,7 @@ export default function ScholarshipsPage() {
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              disabled={!option.value} // Prevent empty values
+                              disabled={!option.value}
                             >
                               {option.label}
                             </SelectItem>
@@ -437,7 +504,7 @@ export default function ScholarshipsPage() {
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              disabled={!option.value} // Prevent empty values
+                              disabled={!option.value}
                             >
                               {option.label}
                             </SelectItem>
@@ -470,7 +537,7 @@ export default function ScholarshipsPage() {
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              disabled={!option.value} // Prevent empty values
+                              disabled={!option.value}
                             >
                               {option.label}
                             </SelectItem>
@@ -567,16 +634,144 @@ export default function ScholarshipsPage() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingScholarship
-                    ? "Update Scholarship"
-                    : "Create Scholarship"}
+                <Button type="submit" disabled={createScholarship.isPending}>
+                  {editingScholarship ? (
+                    updateScholarship.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Updating...
+                      </>
+                    ) : (
+                      "Update Scholarship"
+                    )
+                  ) : createScholarship.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Scholarship"
+                  )}
                 </Button>
               </div>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto items-center justify-center">
+          <DialogHeader>
+            <DialogTitle className="p-4 text">
+              Are you sure you want to delete this scholarship:
+              <span className="text-red-500">
+                {deleteData ? ` ${deleteData.title}` : ""}
+              </span>
+            </DialogTitle>
+            <DialogDescription className="ml-4">
+              This action cannot be undone. This will permanently delete the
+              scholarship.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex w-full ">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeleteScholarship}
+              disabled={deleteScholarship.isPending}
+              className="w-full"
+            >
+              Delete
+              {deleteScholarship.isPending && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Drawer */}
+      <Drawer
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        direction="right"
+      >
+        <DrawerContent
+          className={`h-full top-0 right-0 left-auto mt-0 w-[500px] rounded-none`}
+        >
+          <div className="flex flex-col h-full">
+            <DrawerHeader className="flex items-center justify-between p-4 border-b">
+              <DrawerTitle>Scholarship</DrawerTitle>
+              <DrawerClose asChild>
+                <Button variant="ghost" size="sm">
+                  <X className="h-4 w-4" />
+                </Button>
+              </DrawerClose>
+            </DrawerHeader>
+            <DrawerHeader>
+              <DrawerTitle className="text-xl font-bold">
+                {viewScholarship?.title}
+              </DrawerTitle>
+              <DrawerDescription className="text-sm text-muted-foreground">
+                {viewScholarship?.category} • {viewScholarship?.level} •{" "}
+                {viewScholarship?.location}
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="flex-1 p-4 overflow-y-auto">
+              <div>
+                <p className="font-semibold">Provider:</p>
+                <p>{viewScholarship?.provider}</p>
+              </div>
+
+              <div>
+                <p className="font-semibold">Description:</p>
+                <p>{viewScholarship?.description}</p>
+              </div>
+
+              <div>
+                <p className="font-semibold">Requirements:</p>
+                <p>{viewScholarship?.requirements}</p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline">{viewScholarship?.status}</Badge>
+                <Badge variant="secondary">₦{viewScholarship?.amount}</Badge>
+                <Badge variant="default">
+                  Deadline: {viewScholarship?.deadline}
+                </Badge>
+              </div>
+
+              <div>
+                <p className="font-semibold">Benefits:</p>
+                <p>{viewScholarship?.benefits}</p>
+              </div>
+              {viewScholarship?.applicationUrl && (
+                <div className="pt-4">
+                  <Button asChild variant="link" className="text-blue-600 p-0">
+                    <a
+                      href={viewScholarship?.applicationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Apply Now <ExternalLink className="ml-1 h-4 w-4" />
+                    </a>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

@@ -3,6 +3,8 @@
 //import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import Providers from "@/components/providers";
+import { Toaster } from "@/components/ui/sonner";
 
 import { usePathname } from "next/navigation";
 
@@ -20,8 +22,11 @@ export default function RootLayout({
         // className={`${inter.className} antialiased`}
         suppressHydrationWarning={true}
       >
-        {!isAdmin && <Header />}
-        {children}
+        <Providers>
+          {!isAdmin && <Header />}
+          {children}
+        </Providers>
+        <Toaster />
       </body>
     </html>
   );

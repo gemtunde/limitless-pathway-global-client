@@ -41,32 +41,46 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-export interface Column {
-  key: string;
+// Base interface that all table data must extend
+export interface BaseTableData {
+  id: string | number;
+  [key: string]: unknown;
+}
+
+// Column definition with proper typing
+export interface Column<T extends BaseTableData> {
+  key: keyof T;
   label: string;
   sortable?: boolean;
   filterable?: boolean;
-  render?: (value: any, row: any) => React.ReactNode;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
 }
 
-export interface DataTableProps {
-  data: any[];
-  columns: Column[];
+// Filter option interface
+export interface FilterOption {
+  key: string;
+  label: string;
+  options: { value: string; label: string }[];
+}
+
+// Main component props with generic constraint
+export interface DataTableProps<T extends BaseTableData> {
+  data: T[];
+  columns: Column<T>[];
   title: string;
   searchPlaceholder?: string;
   onAdd?: () => void;
-  onEdit?: (row: any) => void;
-  onDelete?: (row: any) => void;
-  onView?: (row: any) => void;
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
+  onView?: (row: T) => void;
   pageSize?: number;
-  filterOptions?: {
-    key: string;
-    label: string;
-    options: { value: string; label: string }[];
-  }[];
+  currentPage?: number;
+  setCurrentPage: (page: number) => void;
+  filterOptions?: FilterOption[];
 }
 
-export function DataTable({
+// Generic DataTable component
+export function DataTable<T extends BaseTableData>({
   data,
   columns,
   title,
@@ -77,10 +91,12 @@ export function DataTable({
   onView,
   pageSize = 10,
   filterOptions = [],
-}: DataTableProps) {
-  const [currentPage, setCurrentPage] = useState(1);
+  currentPage = 1,
+  setCurrentPage,
+}: DataTableProps<T>) {
+  //const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [filters, setFilters] = useState<Record<string, string>>({});
 
@@ -89,16 +105,17 @@ export function DataTable({
     // Search filter
     const matchesSearch =
       searchTerm === "" ||
-      columns.some((column) =>
-        String(row[column.key] || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      );
+      columns.some((column) => {
+        const cellValue = String(row[column.key] ?? "").toLowerCase();
+        return cellValue.includes(searchTerm.toLowerCase());
+      });
 
     // Column filters
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true;
-      return String(row[key] || "").toLowerCase() === value.toLowerCase();
+      if (!value || value === "all") return true;
+      return (
+        String(row[key as keyof T] ?? "").toLowerCase() === value.toLowerCase()
+      );
     });
 
     return matchesSearch && matchesFilters;
@@ -111,8 +128,29 @@ export function DataTable({
     const aValue = a[sortColumn];
     const bValue = b[sortColumn];
 
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+    // Handle different data types for sorting
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortDirection === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
+
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+    }
+
+    if (aValue instanceof Date && bValue instanceof Date) {
+      return sortDirection === "asc"
+        ? aValue.getTime() - bValue.getTime()
+        : bValue.getTime() - aValue.getTime();
+    }
+
+    // Fallback comparison
+    const aStr = String(aValue ?? "");
+    const bStr = String(bValue ?? "");
+
+    if (aStr < bStr) return sortDirection === "asc" ? -1 : 1;
+    if (aStr > bStr) return sortDirection === "asc" ? 1 : -1;
     return 0;
   });
 
@@ -121,7 +159,7 @@ export function DataTable({
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedData = sortedData.slice(startIndex, startIndex + pageSize);
 
-  const handleSort = (column: string) => {
+  const handleSort = (column: keyof T) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -135,7 +173,7 @@ export function DataTable({
     setCurrentPage(1);
   };
 
-  const renderCellValue = (column: Column, row: any) => {
+  const renderCellValue = (column: Column<T>, row: T): React.ReactNode => {
     const value = row[column.key];
 
     if (column.render) {
@@ -155,7 +193,11 @@ export function DataTable({
       return value.toLocaleDateString();
     }
 
-    return String(value || "");
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    return String(value);
   };
 
   return (
@@ -204,7 +246,7 @@ export function DataTable({
                   <SelectItem
                     key={option.value}
                     value={option.value}
-                    disabled={!option.value} // Prevent empty values
+                    disabled={!option.value}
                   >
                     {option.label}
                   </SelectItem>
@@ -222,7 +264,7 @@ export function DataTable({
               <TableRow>
                 {columns.map((column) => (
                   <TableHead
-                    key={column.key}
+                    key={String(column.key)}
                     className={
                       column.sortable ? "cursor-pointer select-none" : ""
                     }
@@ -261,7 +303,7 @@ export function DataTable({
                 paginatedData.map((row, index) => (
                   <TableRow key={row.id || index}>
                     {columns.map((column) => (
-                      <TableCell key={column.key}>
+                      <TableCell key={String(column.key)}>
                         {renderCellValue(column, row)}
                       </TableCell>
                     ))}

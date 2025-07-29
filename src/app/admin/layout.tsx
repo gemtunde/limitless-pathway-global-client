@@ -2,9 +2,7 @@
 
 import { Header } from "@/components/admin/layout/Header";
 import { Sidebar } from "@/components/admin/layout/Sidebar";
-import { ToastProvider } from "@/components/providers/ToastProvider";
-//import { Sidebar } from "@/components/admin/Sidebar";
-//import { Header } from "@/components/admin/Header";
+
 import React from "react";
 
 export default function AdminLayout({
@@ -21,7 +19,6 @@ export default function AdminLayout({
           {children}
         </main>
       </div>
-      <ToastProvider />
     </div>
   );
 }
