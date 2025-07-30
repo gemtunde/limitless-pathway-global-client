@@ -32,14 +32,14 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, DollarSign, ExternalLink, Loader2, X } from "lucide-react";
+import { Calendar, ExternalLink, Loader2, X } from "lucide-react";
 import {
   Column,
   DataTable,
   BaseTableData,
   FilterOption,
 } from "@/components/admin/table/DataTable";
-import { formatDate } from "@/lib/helpers";
+//import { formatDate } from "@/lib/helpers";
 import { useScholarships } from "@/hooks/admin/queries/scholarships";
 import { TableSkeleton } from "@/components/table/TableSkeleton";
 import {
@@ -258,17 +258,17 @@ export default function ScholarshipsPage() {
   // Column definitions with proper typing
   const columns: Column<Scholarship>[] = [
     { key: "title", label: "Title", sortable: true },
-    { key: "provider", label: "Provider", sortable: true },
-    {
-      key: "amount",
-      label: "Amount",
-      render: (value) => (
-        <div className="flex items-center">
-          <DollarSign className="h-4 w-4 mr-1" />
-          {String(value)}
-        </div>
-      ),
-    },
+    // { key: "provider", label: "Provider", sortable: true },
+    // {
+    //   key: "amount",
+    //   label: "Amount",
+    //   render: (value) => (
+    //     <div className="flex items-center">
+    //       <DollarSign className="h-4 w-4 mr-1" />
+    //       {String(value)}
+    //     </div>
+    //   ),
+    // },
     {
       key: "deadline",
       label: "Deadline",
@@ -306,12 +306,12 @@ export default function ScholarshipsPage() {
         );
       },
     },
-    {
-      key: "createdAt",
-      label: "Created",
-      sortable: true,
-      render: (value) => formatDate(value as string),
-    },
+    // {
+    //   key: "createdAt",
+    //   label: "Created",
+    //   sortable: true,
+    //   render: (value) => formatDate(value as string),
+    // },
   ];
 
   // Filter options for the table

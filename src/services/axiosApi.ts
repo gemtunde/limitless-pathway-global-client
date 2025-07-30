@@ -2,9 +2,7 @@ import axios from "axios";
 
 // Create a simple axios instance without authentication
 const axiosInstance = axios.create({
-  baseURL:
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://limitless-pathway-global-server.onrender.com/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
   timeout: 30000, // 30 seconds timeout (Render can be slower on cold starts)
   headers: {
     "Content-Type": "application/json",

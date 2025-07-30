@@ -51,11 +51,12 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+//import ImageUploadZone from "@/components/form/ImageUploadZone";
 
 // Define the ITeam interface
-interface ITeam {
+export interface ITeam {
   id: string;
-  //_id?: string;
+  _id?: string;
   name: string;
   title: string;
   department: string;
@@ -123,6 +124,7 @@ export default function TeamPage() {
 
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [viewTeam, setViewTeam] = useState<ITeam | null>(null);
+  //const [bannerFile, setBannerFile] = useState<File | null>(null);
 
   const form = useForm<TeamMemberFormData>({
     resolver: zodResolver(teamMemberSchema),
@@ -143,12 +145,13 @@ export default function TeamPage() {
       languages: "",
     },
   });
+  //form.setValue("image", bannerFile ? URL.createObjectURL(bannerFile) : "");
 
   // Data fetching and mutations
   const [currentPage, setCurrentPage] = useState(1);
   const { data: teamData, isLoading } = useTeam(currentPage, 10);
   const teams = teamData?.data || [];
-  console.log("Team data fetched:", teams);
+  //console.log("Team data fetched:", teams);
 
   // Import the mutations
   const createTeam = useCreateTeam();
@@ -172,6 +175,7 @@ export default function TeamPage() {
           res.message || "Team member has been updated successfully!"
         );
       } else {
+        console.log("Creating new team member with data:", data);
         const res = await createTeam.mutateAsync(data);
         toast.success(
           res.message || "Team member has been created successfully!"
@@ -639,6 +643,12 @@ export default function TeamPage() {
                     </FormItem>
                   )}
                 />
+                {/* <ImageUploadZone
+                  label="Banner Image"
+                  description="Upload a clear Banner Image"
+                  file={bannerFile}
+                  onChange={setBannerFile}
+                /> */}
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField

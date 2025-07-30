@@ -8,30 +8,36 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Award, Target, Users, Heart, ArrowRight } from "lucide-react";
+import { Award, Target, Users, Heart, ArrowRight, Loader2 } from "lucide-react";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useTeam } from "@/hooks/admin/queries/team";
+import { ITeam } from "../admin/team/page";
 
 export default function About() {
-  const members = [
-    {
-      name: "Sule Farida",
-      image: "/farida.jpeg",
-      title: "Project Management",
-    },
-    {
-      name: "Gloria Owusu Agyeman",
-      image: "/glria.avif",
-      title: "Project Management",
-    },
-    {
-      name: "Helen Idoko",
-      image: "/helen.avif",
-      title: "Project Management",
-    },
-  ];
+  // const members = [
+  //   {
+  //     name: "Sule Farida",
+  //     image: "/farida.jpeg",
+  //     title: "Project Management",
+  //   },
+  //   {
+  //     name: "Gloria Owusu Agyeman",
+  //     image: "/glria.avif",
+  //     title: "Project Management",
+  //   },
+  //   {
+  //     name: "Helen Idoko",
+  //     image: "/helen.avif",
+  //     title: "Project Management",
+  //   },
+  // ];
+  // Data fetching and mutations
+  const { data: teamData, isLoading } = useTeam();
+  const members = teamData?.data || [];
+  console.log("Team data fetched:", members);
 
   const values = [
     {
@@ -240,34 +246,40 @@ export default function About() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {members.map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-              >
-                <Card className="text-center border-0 shadow-lg">
-                  <Image
-                    src={`${member.image}`}
-                    alt={`Team Member ${index + 1}`}
-                    width={128}
-                    height={128}
-                    className="w-32 h-32 rounded-full mx-auto object-cover"
-                  />
-                  <CardHeader>
-                    <CardTitle className="text-xl font-semibold text-gray-900">
-                      {member.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-600">
-                      {member.title}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+              </div>
+            ) : (
+              members.map((member: ITeam) => (
+                <motion.div
+                  key={member._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 4 * 0.2 }}
+                >
+                  <Card className="text-center border-0 shadow-lg">
+                    <Image
+                      src={`${member.image}`}
+                      alt={`Team Member ${member.id}`}
+                      width={128}
+                      height={128}
+                      className="w-32 h-32 rounded-full mx-auto object-cover"
+                    />
+                    <CardHeader>
+                      <CardTitle className="text-xl font-semibold text-gray-900">
+                        {member.name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-gray-600">
+                        {member.title}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </section>
