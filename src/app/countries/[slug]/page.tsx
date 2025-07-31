@@ -1,27 +1,27 @@
-// app/countries/[slug]/page.tsx
 "use client";
 
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-//import { countriesData } from "@/data/countries";
 import { Button } from "@/components/ui/button";
 import Flag from "react-world-flags";
 import { notFound } from "next/navigation";
-import { countriesData } from "@/data/countries";
 import Footer from "@/components/Footer";
+import { useCountryBySlug } from "@/hooks/admin/queries/countries";
+import { TableSkeleton } from "@/components/table/TableSkeleton";
+import Image from "next/image";
 
 export default function CountryPage() {
-  //   const { slug } = useParams();
-  //   const country = countriesData.find((c) => c.slug === slug);
   const params = useParams();
-  const slug = params?.slug;
+  const slug = typeof params?.slug === "string" ? params.slug : "";
+
+  const { data: countryData, isLoading } = useCountryBySlug(slug);
+  const country = countryData?.data || [];
 
   // Ensure slug is available before accessing data
   if (!slug) return <p>Loading...</p>;
 
-  const country = countriesData.find((country) => country.slug === slug);
-
   if (!country) return notFound();
+  if (isLoading) return <TableSkeleton rows={10} />;
 
   return (
     <>
@@ -51,36 +51,90 @@ export default function CountryPage() {
           viewport={{ once: true }}
           className="grid md:grid-cols-3 gap-6"
         >
-          {country.benefits.map((benefit, i) => (
-            <div key={i} className="bg-muted p-4 rounded-xl shadow">
-              <h3 className="font-semibold text-lg mb-1">{benefit.title}</h3>
-              <p className="text-sm text-muted-foreground">
-                {benefit.description}
-              </p>
-            </div>
-          ))}
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-2xl font-bold mb-4">Scholarships</h2>
-          <div className="space-y-4">
-            {country.scholarships.map((scholarship, i) => (
-              <div key={i}>
-                <h4 className="font-semibold text-primary mb-1">
-                  {scholarship.title}
-                </h4>
-                <p className="text-muted-foreground text-sm">
-                  {scholarship.description}
-                </p>
-              </div>
-            ))}
+          <div className="bg-muted p-4 rounded-xl shadow">
+            <h3 className="font-semibold text-lg mb-1">Benefit</h3>
+            <p className="text-sm text-muted-foreground">
+              {country?.benefits || "No benefits listed."}
+            </p>
+          </div>
+          <div className="bg-muted p-4 rounded-xl shadow">
+            <h3 className="font-semibold text-lg mb-1">Cost of Living</h3>
+            <p className="text-sm text-muted-foreground">
+              {country?.costOfLiving ||
+                "No cost of living information available."}
+            </p>
+          </div>
+          <div className="bg-muted p-4 rounded-xl shadow">
+            <h3 className="font-semibold text-lg mb-1">Popular Universities</h3>
+            <p className="text-sm text-muted-foreground">
+              {country?.popularUniversities ||
+                "No popular universities information available."}
+            </p>
           </div>
         </motion.section>
+
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Scholarships
+            </h2>
+            <p className="text-[16px] text-gray-600 mb-6">
+              {country?.scholarships || "No description available."}
+            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Description
+            </h2>
+            <p className="text-[16px] text-gray-600 mb-6">
+              {country?.description || "No description available."}
+            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Language Requirements
+            </h2>
+
+            <p className="text-[16px] text-gray-600 mb-6">
+              {country?.languageRequirements ||
+                "No language requirements available."}
+            </p>
+
+            {/* <div className="flex flex-col sm:flex-row gap-4 my-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold"
+                  onClick={() => handleNav("/apply-now")}
+                >
+                  Apply Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+                <Button
+                  onClick={() => handleNav("/contact")}
+                  size="lg"
+                  // variant="secondary"
+                  className="border-white text-white hover:bg-white hover:text-blue-600"
+                >
+                  Contact Us
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div> */}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Image
+              src="/Hero-study-1.jpg"
+              alt="Our Mission"
+              width={500}
+              height={400}
+              className="rounded-lg shadow-lg w-full"
+            />
+          </motion.div>
+        </div>
 
         <motion.section
           initial={{ opacity: 0, y: 40 }}
@@ -93,9 +147,7 @@ export default function CountryPage() {
             Student Visa Requirements for {country.name}
           </h2>
           <ul className="list-disc list-inside mt-4 space-y-1 text-muted-foreground text-sm">
-            {country.visaRequirements.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
+            {country?.visaRequirements || "No visa requirements listed."}
           </ul>
         </motion.section>
 

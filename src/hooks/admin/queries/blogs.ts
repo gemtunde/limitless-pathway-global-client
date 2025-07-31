@@ -12,3 +12,14 @@ export const useBlogs = (page = 1, limit = 10) => {
     refetchInterval: 3600000,
   });
 };
+
+export const useBlogBySlug = (slug: string) => {
+  return useQuery({
+    queryKey: ["blogs-slug", slug],
+    queryFn: async () => {
+      const response = await axiosApi.get(`/blog/slug/${slug}`);
+      return response.data;
+    },
+    refetchInterval: 3600000,
+  });
+};

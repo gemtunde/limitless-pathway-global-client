@@ -14,3 +14,13 @@ export const useCountries = (page = 1, limit = 10) => {
     refetchInterval: 3600000,
   });
 };
+export const useCountryBySlug = (slug: string) => {
+  return useQuery({
+    queryKey: ["countries", slug],
+    queryFn: async () => {
+      const response = await axiosApi.get(`/countries/slug/${slug}`);
+      return response.data;
+    },
+    refetchInterval: 3600000,
+  });
+};

@@ -112,70 +112,7 @@ const categoryOptions = [
   { value: "application-tips", label: "Application Tips" },
 ];
 
-// Mock data
-// const mockBlogPosts: IBlog[] = [
-//   {
-//     id: 1,
-//     title: "Top 10 Study Destinations for International Students",
-//     slug: "top-10-study-destinations",
-//     excerpt:
-//       "Discover the best countries for international education with comprehensive analysis of each destination.",
-//     content: "Full blog content here...",
-//     featuredImage: "/Hero-page.png",
-//     category: "study-abroad",
-//     tags: "destinations, universities, international education",
-//     status: "published",
-//     publishDate: "2024-01-15",
-//     metaDescription:
-//       "Explore the top 10 study destinations for international students",
-//     author: "Admin User",
-//     readTime: "8 min read",
-//     views: 1250,
-//     createdAt: new Date("2024-01-15"),
-//     updatedAt: new Date("2024-01-15"),
-//   },
-//   {
-//     id: 2,
-//     title: "How to Secure a Scholarship to Study Abroad",
-//     slug: "how-to-secure-scholarship",
-//     excerpt:
-//       "A comprehensive guide to finding and applying for international scholarships.",
-//     content: "Full blog content here...",
-//     featuredImage: "/Hero-study-1.jpg",
-//     category: "scholarships",
-//     tags: "scholarships, funding, financial aid",
-//     status: "published",
-//     publishDate: "2024-01-10",
-//     metaDescription:
-//       "Learn how to secure scholarships for international education",
-//     author: "Admin User",
-//     readTime: "6 min read",
-//     views: 980,
-//     createdAt: new Date("2024-01-10"),
-//     updatedAt: new Date("2024-01-12"),
-//   },
-//   {
-//     id: 3,
-//     title: "Student Visa Application Tips",
-//     slug: "student-visa-application-tips",
-//     excerpt: "Essential tips for a smooth student visa application process.",
-//     content: "Full blog content here...",
-//     featuredImage: "/Hero-study-2.jpg",
-//     category: "visa-guide",
-//     tags: "visa, application, immigration",
-//     status: "draft",
-//     publishDate: "",
-//     metaDescription: "Tips for successful student visa applications",
-//     author: "Admin User",
-//     readTime: "5 min read",
-//     views: 0,
-//     createdAt: new Date("2024-01-05"),
-//     updatedAt: new Date("2024-01-08"),
-//   },
-// ];
-
 export default function BlogPage() {
-  //const [blogPosts, setBlogPosts] = useState<IBlog[]>(mockBlogPosts);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<IBlog | null>(null);
 
@@ -275,11 +212,6 @@ export default function BlogPage() {
     setIsDialogOpen(true);
   };
 
-  // const handleDelete = (post: IBlog) => {
-  //   console.log("Deleting post:", post);
-  //   //setBlogPosts((prev) => prev.filter((p) => p.id !== post.id));
-  //   toast.success("Blog post deleted successfully!");
-  // };
   const handleDelete = (post: IBlog) => {
     setIsDeleteDialogOpen(true);
     setDeleteData(post);

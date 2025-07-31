@@ -1,150 +1,164 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, MapPin, Tag } from "lucide-react";
 import { motion } from "framer-motion";
-import Footer from "@/components/Footer";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-// export const metadata: Metadata = {
-//   title: "Event | Limitless Global Pathways",
-// };
+import {
+  Calendar,
+  DollarSign,
+  GraduationCap,
+  MapPin,
+  Clock,
+  Loader2,
+} from "lucide-react";
+import Footer from "@/components/Footer";
+import { useRouter } from "next/navigation";
+import { formatDate } from "@/lib/helpers";
+import { useEvents } from "@/hooks/admin/queries/events";
+import { IEvent } from "../admin/events/page";
 
 export default function EventPage() {
+  const { data: eventData, isLoading } = useEvents();
+  const events = eventData?.data || [];
+  console.log("Events data fetched:", events);
+
+  const router = useRouter();
+
+  const handleNav = (path: string) => {
+    router.push(path);
+  };
+
   return (
     <div className="min-h-screen">
-      <section className="hero-gradient py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              UK Study Expo – Virtual Edition
-            </h1>
-            <Button size="lg" className="bg-orange-500 hover:bg-orange-600">
-              Register Now
-            </Button>
-          </motion.div>
+      {/* Hero */}
+      <section className="hero-gradient py-20 text-center text-white">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          Event Opportunities
+        </h1>
+        <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+          Discover funding opportunities to make your study abroad dreams
+          affordable
+        </p>
+      </section>
+
+      {/* Events */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8">
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+            </div>
+          ) : events.length > 0 ? (
+            events.map((event: IEvent, index: number) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl">
+                  <CardHeader>
+                    <div className="flex justify-between items-start mb-2">
+                      <Badge variant="outline">{event.eventType}</Badge>
+                      <Badge variant="destructive">
+                        <span className="mr-2"> Deadline:</span>
+                        <Clock className="w-3 h-3 mr-1" />
+                        {formatDate(event.registrationDeadline as string)}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-xl font-bold">
+                      {event.title}
+                    </CardTitle>
+                    <CardDescription>
+                      Time: {event.time || "No time specified."}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p>{event.description}</p>
+                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                      <div className="flex items-center">
+                        <DollarSign className="w-4 h-4 mr-2" />
+                        {event.registrationFee}
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {event.location}
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {`${event.maxAttendees} attendees ` ||
+                          " no limit specified."}
+                      </div>
+                      <div className="flex items-center">
+                        <GraduationCap className="w-4 h-4 mr-2" />
+                        {event.speakers || " no speakers listed."}
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {formatDate(event.date)}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">Agenda:</h4>
+                      <p className=" text-sm text-gray-600">
+                        {event.agenda || " no agenda available."}
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Requirements:</h4>
+                      <p className=" text-sm text-gray-600">
+                        {event.requirements || " no requirements available."}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">Audience:</h4>
+                      <p className="list-disc list-inside text-sm text-gray-600">
+                        {event.targetAudience || "no Audience listed"}
+                      </p>
+                    </div>
+
+                    <Button
+                      onClick={() => handleNav("/apply-now")}
+                      className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
+                    >
+                      Apply Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))
+          ) : (
+            <p className="col-span-2 text-center text-gray-600">
+              No Audience found matching your criteria.
+            </p>
+          )}
         </div>
       </section>
 
-      <section className="w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-6 md:px-20 py-16">
-          <div className="lg:col-span-2 space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Event Overview</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
-                <div className="flex items-center gap-2">
-                  <Tag className="w-4 h-4" /> Event Title: UK Study Expo –
-                  Virtual Edition
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" /> Date: October 20, 2025
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" /> Time: 2:00 PM - 4:30 PM (WAT)
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" /> Location: Online (Zoom - link
-                  shared after registration)
-                </div>
-                <div className="flex items-center gap-2">
-                  <Tag className="w-4 h-4" /> Event Type: Virtual
-                </div>
-                <div className="flex items-center gap-2">
-                  <Tag className="w-4 h-4" /> Registration Fee: Free
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-2">Event Description</h3>
-              <p className="text-gray-800">
-                Join us for the UK Study Expo – Virtual Edition, a comprehensive
-                online event designed to guide aspiring international students
-                through the excitement and opportunities of studying in the UK.
-                This interactive session will help you discover UK universities,
-                available scholarships, admissions requirements, and tips—all
-                from the comfort of your home.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-2">Who Should Attend</h3>
-              <ul className="list-disc list-inside text-gray-800">
-                <li>
-                  Secondary school graduates seeking undergraduate programs in
-                  the UK
-                </li>
-                <li>
-                  University students or graduates interested in postgraduate
-                  opportunities
-                </li>
-                <li>
-                  Parents/guardians looking to explore study options for their
-                  children
-                </li>
-                <li>
-                  School counselors and academic advisors supporting
-                  international education
-                </li>
-                <li>
-                  Working professionals aiming to upskill through UK-based
-                  certifications and master’s programs
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-xl font-semibold mb-2">
-                Why You Should Attend:
-              </h3>
-              <ul className="list-disc list-inside text-gray-800">
-                <li>Learn how to apply for UK student visas</li>
-                <li>
-                  Discover fully and partially funded scholarship opportunities
-                </li>
-                <li>
-                  Gain insights on student life, accommodation, and career
-                  options
-                </li>
-                <li>Ask your questions live during interactive Q&A sessions</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-2">How to Register</h3>
-              <ol className="list-decimal list-inside text-gray-800">
-                <li>Click Register Now and Fill out form</li>
-                <li>
-                  Check your email for a confirmation link and event details
-                </li>
-                <li>Mark your calendar and join us live on the event date!</li>
-              </ol>
-            </div>
-          </div>
-
-          <Card className="bg-gray-50">
-            <CardContent className="p-4">
-              <h4 className="text-lg font-semibold mb-2">
-                Subscribe to Newsletter
-              </h4>
-              <div className="flex gap-2">
-                <Input placeholder="Enter email address" />
-                <Button className="bg-orange-500 hover:bg-orange-600">
-                  Subscribe
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* CTA */}
+      <section className="py-20 bg-blue-600 text-white text-center">
+        <h2 className="text-3xl font-bold mb-4">
+          Need Help Finding Scholarships?
+        </h2>
+        <p className="text-lg mb-8 max-w-2xl mx-auto">
+          Our expert team can help you identify and apply for scholarships that
+          match your profile and goals.
+        </p>
+        <Button className="bg-yellow-400 text-black font-semibold hover:bg-yellow-500">
+          Get Personalized Scholarship Guidance
+        </Button>
       </section>
+
       <Footer />
     </div>
   );

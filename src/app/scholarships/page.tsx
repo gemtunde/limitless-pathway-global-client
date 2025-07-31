@@ -25,145 +25,152 @@ import {
   GraduationCap,
   MapPin,
   Clock,
+  Loader2,
 } from "lucide-react";
 import Footer from "@/components/Footer";
+import { useScholarships } from "@/hooks/admin/queries/scholarships";
+import { Scholarship } from "../admin/scholarships/page";
+import { useRouter } from "next/navigation";
+import { formatDate } from "@/lib/helpers";
 
 export default function Scholarships() {
-  const scholarships = [
-    {
-      title: "Fulbright U.S. Student Program",
-      provider: "U.S. State Department",
-      amount: "Full funding",
-      deadline: "October 1, 2025",
-      location: "United States",
-      level: "Graduate",
-      description:
-        "The Fulbright Program offers research, study, and teaching opportunities in over 140 countries.",
-      requirements: [
-        "Bachelor's degree",
-        "U.S. citizenship",
-        "Strong academic record",
-      ],
-      benefits: [
-        "Full tuition",
-        "Monthly stipend",
-        "Travel allowance",
-        "Health insurance",
-      ],
-      category: "Research",
-    },
-    {
-      title: "Chevening Scholarships",
-      provider: "UK Government",
-      amount: "Full funding",
-      deadline: "November 7, 2025",
-      location: "United Kingdom",
-      level: "Master's",
-      description:
-        "Chevening Scholarships are awarded to exceptional individuals with leadership potential.",
-      requirements: [
-        "Bachelor's degree",
-        "Work experience",
-        "English proficiency",
-      ],
-      benefits: [
-        "Full tuition",
-        "Monthly stipend",
-        "Travel costs",
-        "Visa application",
-      ],
-      category: "Leadership",
-    },
-    {
-      title: "Commonwealth Scholarships",
-      provider: "Commonwealth Scholarship Commission",
-      amount: "Full funding",
-      deadline: "October 1, 2025",
-      location: "UK & Commonwealth",
-      level: "Master's/PhD",
-      description:
-        "For citizens of Commonwealth countries to pursue postgraduate studies.",
-      requirements: [
-        "Commonwealth citizenship",
-        "First-class degree",
-        "Development impact",
-      ],
-      benefits: [
-        "Full tuition",
-        "Living allowance",
-        "Return airfare",
-        "Thesis grant",
-      ],
-      category: "Development",
-    },
-    {
-      title: "Erasmus+ Programme",
-      provider: "European Commission",
-      amount: "Partial funding",
-      deadline: "Multiple deadlines",
-      location: "Europe",
-      level: "Various",
-      description:
-        "EU programme for education, training, youth and sport in Europe.",
-      requirements: [
-        "EU citizenship or enrollment",
-        "Academic excellence",
-        "Language skills",
-      ],
-      benefits: [
-        "Monthly grant",
-        "Travel support",
-        "Language courses",
-        "Insurance",
-      ],
-      category: "Exchange",
-    },
-    {
-      title: "Australia Awards",
-      provider: "Australian Government",
-      amount: "Full funding",
-      deadline: "April 30, 2025",
-      location: "Australia",
-      level: "Master's/PhD",
-      description:
-        "Long-term development scholarships for developing countries.",
-      requirements: [
-        "Developing country citizenship",
-        "Leadership potential",
-        "Development focus",
-      ],
-      benefits: [
-        "Full tuition",
-        "Living allowance",
-        "Health cover",
-        "Return airfare",
-      ],
-      category: "Development",
-    },
-    {
-      title: "DAAD Scholarships",
-      provider: "German Academic Exchange Service",
-      amount: "Partial/Full funding",
-      deadline: "Various deadlines",
-      location: "Germany",
-      level: "Master's/PhD",
-      description:
-        "Scholarships for international students to study in Germany.",
-      requirements: [
-        "Bachelor's degree",
-        "German/English proficiency",
-        "Academic excellence",
-      ],
-      benefits: [
-        "Monthly stipend",
-        "Travel allowance",
-        "Health insurance",
-        "German courses",
-      ],
-      category: "Academic",
-    },
-  ];
-
+  // const scholarships = [
+  //   {
+  //     title: "Fulbright U.S. Student Program",
+  //     provider: "U.S. State Department",
+  //     amount: "Full funding",
+  //     deadline: "October 1, 2025",
+  //     location: "United States",
+  //     level: "Graduate",
+  //     description:
+  //       "The Fulbright Program offers research, study, and teaching opportunities in over 140 countries.",
+  //     requirements: [
+  //       "Bachelor's degree",
+  //       "U.S. citizenship",
+  //       "Strong academic record",
+  //     ],
+  //     benefits: [
+  //       "Full tuition",
+  //       "Monthly stipend",
+  //       "Travel allowance",
+  //       "Health insurance",
+  //     ],
+  //     category: "Research",
+  //   },
+  //   {
+  //     title: "Chevening Scholarships",
+  //     provider: "UK Government",
+  //     amount: "Full funding",
+  //     deadline: "November 7, 2025",
+  //     location: "United Kingdom",
+  //     level: "Master's",
+  //     description:
+  //       "Chevening Scholarships are awarded to exceptional individuals with leadership potential.",
+  //     requirements: [
+  //       "Bachelor's degree",
+  //       "Work experience",
+  //       "English proficiency",
+  //     ],
+  //     benefits: [
+  //       "Full tuition",
+  //       "Monthly stipend",
+  //       "Travel costs",
+  //       "Visa application",
+  //     ],
+  //     category: "Leadership",
+  //   },
+  //   {
+  //     title: "Commonwealth Scholarships",
+  //     provider: "Commonwealth Scholarship Commission",
+  //     amount: "Full funding",
+  //     deadline: "October 1, 2025",
+  //     location: "UK & Commonwealth",
+  //     level: "Master's/PhD",
+  //     description:
+  //       "For citizens of Commonwealth countries to pursue postgraduate studies.",
+  //     requirements: [
+  //       "Commonwealth citizenship",
+  //       "First-class degree",
+  //       "Development impact",
+  //     ],
+  //     benefits: [
+  //       "Full tuition",
+  //       "Living allowance",
+  //       "Return airfare",
+  //       "Thesis grant",
+  //     ],
+  //     category: "Development",
+  //   },
+  //   {
+  //     title: "Erasmus+ Programme",
+  //     provider: "European Commission",
+  //     amount: "Partial funding",
+  //     deadline: "Multiple deadlines",
+  //     location: "Europe",
+  //     level: "Various",
+  //     description:
+  //       "EU programme for education, training, youth and sport in Europe.",
+  //     requirements: [
+  //       "EU citizenship or enrollment",
+  //       "Academic excellence",
+  //       "Language skills",
+  //     ],
+  //     benefits: [
+  //       "Monthly grant",
+  //       "Travel support",
+  //       "Language courses",
+  //       "Insurance",
+  //     ],
+  //     category: "Exchange",
+  //   },
+  //   {
+  //     title: "Australia Awards",
+  //     provider: "Australian Government",
+  //     amount: "Full funding",
+  //     deadline: "April 30, 2025",
+  //     location: "Australia",
+  //     level: "Master's/PhD",
+  //     description:
+  //       "Long-term development scholarships for developing countries.",
+  //     requirements: [
+  //       "Developing country citizenship",
+  //       "Leadership potential",
+  //       "Development focus",
+  //     ],
+  //     benefits: [
+  //       "Full tuition",
+  //       "Living allowance",
+  //       "Health cover",
+  //       "Return airfare",
+  //     ],
+  //     category: "Development",
+  //   },
+  //   {
+  //     title: "DAAD Scholarships",
+  //     provider: "German Academic Exchange Service",
+  //     amount: "Partial/Full funding",
+  //     deadline: "Various deadlines",
+  //     location: "Germany",
+  //     level: "Master's/PhD",
+  //     description:
+  //       "Scholarships for international students to study in Germany.",
+  //     requirements: [
+  //       "Bachelor's degree",
+  //       "German/English proficiency",
+  //       "Academic excellence",
+  //     ],
+  //     benefits: [
+  //       "Monthly stipend",
+  //       "Travel allowance",
+  //       "Health insurance",
+  //       "German courses",
+  //     ],
+  //     category: "Academic",
+  //   },
+  // ];
+  const { data: scholarshipData, isLoading } = useScholarships();
+  const scholarships = scholarshipData?.data || [];
+  console.log("Scholarships Data=======>>>>>>>", scholarships);
   const categories = [
     "All",
     "Research",
@@ -172,25 +179,34 @@ export default function Scholarships() {
     "Exchange",
     "Academic",
   ];
-  const countries = [
+  const countries: string[] = [
     "All",
-    ...Array.from(new Set(scholarships.map((s) => s.location))),
+    ...Array.from(
+      new Set((scholarships as Scholarship[]).map((s) => String(s.location)))
+    ),
   ];
+  const router = useRouter();
+
+  const handleNav = (path: string) => {
+    router.push(path);
+  };
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedCountry, setSelectedCountry] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredScholarships = scholarships.filter((scholarship) => {
-    const matchCategory =
-      selectedCategory === "All" || scholarship.category === selectedCategory;
-    const matchCountry =
-      selectedCountry === "All" || scholarship.location === selectedCountry;
-    const matchSearch =
-      scholarship.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      scholarship.provider.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCategory && matchCountry && matchSearch;
-  });
+  const filteredScholarships = scholarships.filter(
+    (scholarship: Scholarship) => {
+      const matchCategory =
+        selectedCategory === "All" || scholarship.category === selectedCategory;
+      const matchCountry =
+        selectedCountry === "All" || scholarship.location === selectedCountry;
+      const matchSearch =
+        scholarship.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        scholarship.provider.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchCategory && matchCountry && matchSearch;
+    }
+  );
 
   return (
     <div className="min-h-screen">
@@ -251,74 +267,81 @@ export default function Scholarships() {
       {/* Scholarships */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8">
-          {filteredScholarships.length > 0 ? (
-            filteredScholarships.map((scholarship, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge variant="outline">{scholarship.category}</Badge>
-                      <Badge variant="destructive">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {scholarship.deadline}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-xl font-bold">
-                      {scholarship.title}
-                    </CardTitle>
-                    <CardDescription>{scholarship.provider}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p>{scholarship.description}</p>
-                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-2" />
-                        {scholarship.amount}
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+            </div>
+          ) : filteredScholarships.length > 0 ? (
+            filteredScholarships.map(
+              (scholarship: Scholarship, index: number) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <Card className="h-full border-0 shadow-lg hover:shadow-xl">
+                    <CardHeader>
+                      <div className="flex justify-between items-start mb-2">
+                        <Badge variant="outline">{scholarship.category}</Badge>
+                        <Badge variant="destructive">
+                          <span className="mr-2"> Deadline:</span>
+                          <Clock className="w-3 h-3 mr-1" />
+                          {formatDate(scholarship.deadline)}
+                        </Badge>
                       </div>
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {scholarship.location}
+                      <CardTitle className="text-xl font-bold">
+                        {scholarship.title}
+                      </CardTitle>
+                      <CardDescription>{scholarship.provider}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <p>{scholarship.description}</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <DollarSign className="w-4 h-4 mr-2" />
+                          {scholarship.amount}
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          {scholarship.location}
+                        </div>
+                        <div className="flex items-center">
+                          <GraduationCap className="w-4 h-4 mr-2" />
+                          {scholarship.level}
+                        </div>
+                        <div className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-2" />
+                          {formatDate(scholarship.deadline)}
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        {scholarship.level}
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        {scholarship.deadline}
-                      </div>
-                    </div>
 
-                    <div>
-                      <h4 className="font-semibold">Requirements:</h4>
-                      <ul className="list-disc list-inside text-sm text-gray-600">
-                        {scholarship.requirements.map((req, i) => (
-                          <li key={i}>{req}</li>
-                        ))}
-                      </ul>
-                    </div>
+                      <div>
+                        <h4 className="font-semibold">Requirements:</h4>
+                        <p className=" text-sm text-gray-600">
+                          {scholarship.requirements ||
+                            " no requirements available."}
+                        </p>
+                      </div>
 
-                    <div>
-                      <h4 className="font-semibold">Benefits:</h4>
-                      <ul className="list-disc list-inside text-sm text-gray-600">
-                        {scholarship.benefits.map((benefit, i) => (
-                          <li key={i}>{benefit}</li>
-                        ))}
-                      </ul>
-                    </div>
+                      <div>
+                        <h4 className="font-semibold">Benefits:</h4>
+                        <p className="list-disc list-inside text-sm text-gray-600">
+                          {scholarship.benefits || "no benefits listed"}
+                        </p>
+                      </div>
 
-                    <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700">
-                      Apply Now
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
+                      <Button
+                        onClick={() => handleNav("/apply-now")}
+                        className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
+                      >
+                        Apply Now
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )
+            )
           ) : (
             <p className="col-span-2 text-center text-gray-600">
               No scholarships found matching your criteria.
