@@ -11,98 +11,24 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle,
-  FileText,
-  GraduationCap,
-  Plane,
-  Users,
-  CreditCard,
+  // FileText,
+  // GraduationCap,
+  // Plane,
+  // Users,
+  // CreditCard,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useService } from "@/hooks/admin/queries/service";
+import { Service } from "../admin/services/page";
+import React from "react";
 
 export default function Services() {
-  const services = [
-    {
-      icon: FileText,
-      title: "University Application Assistance",
-      description:
-        "Complete support for university applications including document preparation, essay writing, and submission.",
-      features: [
-        "Application Strategy",
-        "Document Review",
-        "Essay Writing",
-        "Submission Support",
-      ],
-      color: "bg-blue-100 text-blue-600",
-    },
-    {
-      icon: CreditCard,
-      title: "Scholarship Guidance",
-      description:
-        "Help you find and apply for scholarships to make your education more affordable.",
-      features: [
-        "Scholarship Search",
-        "Application Assistance",
-        "Interview Preparation",
-        "Financial Planning",
-      ],
-      color: "bg-green-100 text-green-600",
-    },
-    {
-      icon: FileText,
-      title: "Visa Processing",
-      description:
-        "Complete visa application support to ensure smooth approval process.",
-      features: [
-        "Visa Assessment",
-        "Document Preparation",
-        "Application Submission",
-        "Interview Coaching",
-      ],
-      color: "bg-purple-100 text-purple-600",
-    },
-    {
-      icon: Users,
-      title: "Career Counseling",
-      description:
-        "Professional guidance to help you choose the right career path and programs.",
-      features: [
-        "Career Assessment",
-        "Program Selection",
-        "Industry Insights",
-        "Future Planning",
-      ],
-      color: "bg-orange-100 text-orange-600",
-    },
-    {
-      icon: Plane,
-      title: "Pre-Departure Support",
-      description:
-        "Comprehensive orientation and preparation for your study abroad journey.",
-      features: [
-        "Orientation Sessions",
-        "Travel Guidance",
-        "Accommodation Help",
-        "Cultural Preparation",
-      ],
-      color: "bg-red-100 text-red-600",
-    },
-    {
-      icon: GraduationCap,
-      title: "Post-Arrival Support",
-      description:
-        "Continued support after you arrive at your destination to ensure smooth settling.",
-      features: [
-        "Airport Pickup",
-        "Accommodation Setup",
-        "Bank Account Opening",
-        "Local Integration",
-      ],
-      color: "bg-teal-100 text-teal-600",
-    },
-  ];
+  const { data: serviceData, isLoading } = useService();
+  const services = serviceData?.data || [];
 
   const process = [
     {
@@ -281,50 +207,52 @@ export default function Services() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group"
-              >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <CardHeader className="text-center">
-                    <div
-                      className={`w-16 h-16 rounded-full ${service.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <service.icon className="h-8 w-8" />
-                    </div>
-                    <CardTitle className="text-xl font-semibold text-gray-900">
-                      {service.title}
-                    </CardTitle>
-                    <CardDescription className="text-gray-600">
-                      {service.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 mb-6">
-                      {service.features.map((feature, idx) => (
-                        <li
-                          key={idx}
-                          className="flex items-center text-sm text-gray-600"
-                        >
-                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+              </div>
+            ) : (
+              services.map((service: Service, index: number) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="group"
+                >
+                  <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <CardHeader className="text-center">
+                      <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                        {"0" + (index + 1)}
+                      </div>
+                      {/* <div
+                            >
+                        <service.icon />
+                      </div> */}
+                      <CardTitle className="text-xl font-semibold text-gray-900">
+                        {service.title || "Service Title Not"}
+                      </CardTitle>
+                      <CardDescription className="text-gray-600">
+                        {service.description || "No description available"}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="flex items-center text-sm text-gray-600">
+                        <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                        {service?.features || "Explore our features"}
+                      </p>
+
+                      {/* <Button
                       className="w-full bg-blue-600 hover:bg-blue-700"
                       size="sm"
                     >
                       Learn More
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                    </Button> */}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </section>

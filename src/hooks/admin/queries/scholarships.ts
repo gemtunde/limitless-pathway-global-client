@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import axiosApi from "@/services/axiosApi";
-// Transaction history query
+
 export const useScholarships = (page = 1, limit = 10) => {
   return useQuery({
     queryKey: ["scholarships", page, limit],

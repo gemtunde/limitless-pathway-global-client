@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Settings } from "lucide-react";
 import { useState } from "react";
 //import Image from "next/image";
 
@@ -47,11 +47,11 @@ const menuItems: MenuItem[] = [
   //     { name: "Overview", href: "/overview" },
   //   ],
   // },
-  // {
-  //   name: "Services",
-  //   href: "/admin/services",
-  //   icon: Settings,
-  // },
+  {
+    name: "Services",
+    href: "/admin/services",
+    icon: Settings,
+  },
   {
     name: "Countries",
     href: "/admin/countries",
