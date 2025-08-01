@@ -1,57 +1,64 @@
 import axios from "axios";
 
-// Create a simple axios instance without authentication
+// Create an axios instance
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
-  timeout: 30000, // 30 seconds timeout (Render can be slower on cold starts)
+  timeout: 30000, // 30 seconds timeout
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
 
-// Simple request interceptor (optional - for logging or other purposes)
+// Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Log request in development
     if (process.env.NODE_ENV === "development") {
       console.log(
-        `Making ${config.method?.toUpperCase()} request to: ${config.url}`
+        `📤 Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`
       );
     }
     return config;
   },
   (error) => {
-    console.error("Request error:", error);
+    console.error("❌ Request Error:", error);
     return Promise.reject(error);
   }
 );
 
-// Simple response interceptor (optional - for logging or error handling)
+// Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Log successful responses in development
     if (process.env.NODE_ENV === "development") {
-      console.log(`Response from ${response.config.url}:`, response.status);
+      console.log(
+        `✅ Response: ${response.status} from ${response.config.url}`
+      );
     }
     return response;
   },
   (error) => {
-    // Handle common errors
     if (error.response) {
-      // Server responded with error status
-      console.error("API Error:", {
+      console.error("🔴 API Error Response:", {
         status: error.response.status,
-        message: error.response.data?.message || error.message,
+        statusText: error.response.statusText,
+        headers: error.response.headers,
+        data: error.response.data,
         url: error.config?.url,
+        method: error.config?.method,
       });
     } else if (error.request) {
-      // Request was made but no response received
-      console.error("Network Error:", error.message);
+      console.error("🟠 Network Error (no response):", {
+        message: error.message,
+        url: error.config?.url,
+      });
     } else {
-      // Something else happened
-      console.error("Error:", error.message);
+      console.error("⚠️ Unknown Error:", {
+        message: error.message,
+      });
     }
+
+    // For deep debugging
+    console.error("🧵 Raw Error Object:", error);
 
     return Promise.reject(error);
   }

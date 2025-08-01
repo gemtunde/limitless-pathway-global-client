@@ -14,14 +14,16 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { loginFormSchema, LoginFormData } from "@/lib/validations";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import useLogin from "@/hooks/admin/mutations/auth/useLogin";
+import { toast } from "sonner";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  //const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -31,18 +33,34 @@ export default function Login() {
     resolver: zodResolver(loginFormSchema),
   });
   const router = useRouter();
+  //const router = useRouter();
+
+  // Mutations
+  const login = useLogin();
+
   const onSubmit = async (data: LoginFormData) => {
-    setIsSubmitting(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    console.log("Login submitted:", data);
-    setIsSubmitting(false);
-    router.push("/admin/scholarships");
-
-    // Handle login logic here
-    // redirect to dashboard or home page
+    try {
+      const response = await login.mutateAsync(data);
+      if (response.status === 200) {
+        console.log("Login successful:", response.data);
+        toast.success(
+          response.data.message || "User has been logged in successfully!"
+        );
+        router.push("/admin");
+      } else {
+        // Handle error response
+        console.error("Login failed:", response.data);
+        toast.error(response.data.message || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error instanceof Error) {
+        toast.error(error.message || "An error occurred during login.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+      return;
+    }
   };
 
   return (
@@ -165,10 +183,17 @@ export default function Login() {
 
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={login.isPending}
                     className="w-full bg-blue-600 hover:bg-blue-700"
                   >
-                    {isSubmitting ? "Signing In..." : "Sign In"}
+                    {login.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Signing In...
+                      </>
+                    ) : (
+                      "Sign In"
+                    )}
                   </Button>
                 </form>
 

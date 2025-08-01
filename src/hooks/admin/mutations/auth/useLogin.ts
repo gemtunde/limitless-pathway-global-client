@@ -1,33 +1,30 @@
-import { useMutation } from '@tanstack/react-query'
-import { AxiosError, AxiosResponse } from 'axios'
-import axiosApi from '@/services/axiosApi'
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError, AxiosResponse } from "axios";
+import axiosApi from "@/services/axiosApi";
 
 export type LoginResponseType = {
-  message: string
-  accessToken: string
-  refreshToken: string
+  message: string;
+  // accessToken: string
+  // refreshToken: string
   user: {
-    id: string
-    firstName: string
-    lastName: string
-    email: string
-    isEmailVerified: boolean
-    isOnboarded: boolean
-  }
-}
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    isEmailVerified: boolean;
+  };
+};
 
 type LoginInputType = {
-  password: string
-  email: string
-}
+  password: string;
+  email: string;
+};
 
 const login = (
   input: LoginInputType
 ): Promise<AxiosResponse<LoginResponseType>> => {
-  return axiosApi.post('auth/login', input, {
-    withCredentials: true,
-  })
-}
+  return axiosApi.post("auth/login", input);
+};
 
 const useLogin = () => {
   return useMutation<
@@ -36,7 +33,7 @@ const useLogin = () => {
     LoginInputType
   >({
     mutationFn: (input: LoginInputType) => login(input),
-  })
-}
+  });
+};
 
-export default useLogin
+export default useLogin;

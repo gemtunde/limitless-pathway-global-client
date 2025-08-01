@@ -14,17 +14,25 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import {
   ResetPasswordFormData,
   resetPasswordFormSchema,
 } from "@/lib/validations";
 import Image from "next/image";
+import useResetPassword from "@/hooks/admin/mutations/auth/useResetPassword";
+import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  //const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const router = useRouter();
+  const params = useParams();
+  const token = params.token as string;
+  console.log("ToKEN", token);
 
   const {
     register,
@@ -33,19 +41,44 @@ export default function ResetPassword() {
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordFormSchema),
   });
+  const ResetPasswordMutation = useResetPassword();
 
   const onSubmit = async (data: ResetPasswordFormData) => {
-    setIsSubmitting(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    console.log("Reset password submitted:", data);
-    setIsSubmitting(false);
-
-    // Handle registration logic here
-    // redirect to verification page or login
+    try {
+      console.log("Reset Password:", data);
+      ResetPasswordMutation.mutate(
+        {
+          token,
+          password: data?.password,
+          confirmPassword: data?.confirmPassword,
+        },
+        {
+          onSuccess: async (res) => {
+            toast.success(res.data.message ?? "Password reset was successful");
+            router.push("/admin/auth/login");
+          },
+          onError: (error) => {
+            toast.error(error?.message ?? "An error occurred. Pls try again");
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Reset Password error:", error);
+    }
   };
+
+  // const onSubmit = async (data: ResetPasswordFormData) => {
+  //   setIsSubmitting(true);
+
+  //   // Simulate API call
+  //   await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  //   console.log("Reset password submitted:", data);
+  //   setIsSubmitting(false);
+
+  //   // Handle registration logic here
+  //   // redirect to verification page or login
+  // };
 
   return (
     <div className="min-h-screen flex">
@@ -163,12 +196,17 @@ export default function ResetPassword() {
 
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={ResetPasswordMutation.isPending}
                     className="w-full bg-blue-600 hover:bg-blue-700"
                   >
-                    {isSubmitting
-                      ? "Creating New Password..."
-                      : "Create New Password"}
+                    {ResetPasswordMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Creating New Password...
+                      </>
+                    ) : (
+                      "Create New Password"
+                    )}
                   </Button>
                 </form>
 
@@ -230,7 +268,7 @@ export default function ResetPassword() {
                   <p className="text-sm text-gray-600">
                     Already have an account?{" "}
                     <Link
-                      href="/admin"
+                      href="/admin/auth/login"
                       className="text-blue-600 hover:text-blue-500 font-medium"
                     >
                       Sign in

@@ -1,30 +1,28 @@
-import { useMutation } from '@tanstack/react-query'
-import { AxiosError, AxiosResponse } from 'axios'
-import axiosApi from '@/services/axiosApi'
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError, AxiosResponse } from "axios";
+import axiosApi from "@/services/axiosApi";
 
 export type RegisterResponseType = {
-  id: string
-  firstName: string
-  lastName: string
-  email: string
-  country: string
-  message: string
-}
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  message: string;
+};
 
 type RegisterInputType = {
-  firstName: string
-  lastName: string
-  email: string
-  country: string
-  password: string
-  agreeTerms: boolean
-}
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 const register = (
   input: RegisterInputType
 ): Promise<AxiosResponse<RegisterResponseType>> => {
-  return axiosApi.post('auth/register', input)
-}
+  return axiosApi.post("auth/register", input);
+};
 
 const useRegister = () => {
   return useMutation<
@@ -33,7 +31,7 @@ const useRegister = () => {
     RegisterInputType
   >({
     mutationFn: (input: RegisterInputType) => register(input),
-  })
-}
+  });
+};
 
-export default useRegister
+export default useRegister;
