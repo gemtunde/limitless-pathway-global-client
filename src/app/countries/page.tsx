@@ -17,85 +17,39 @@ import { useRouter } from "next/navigation";
 import { useCountries } from "@/hooks/admin/queries/countries";
 import { Loader2 } from "lucide-react";
 
+export interface ApiCountryResponse {
+  _id?: number;
+  id?: number;
+  name?: string;
+  slug?: string;
+  flagCode?: string;
+  description?: string;
+  benefits?: string;
+  scholarships?: string;
+  visaRequirements?: string;
+  popularUniversities?: string;
+  costOfLiving?: string;
+  languageRequirements?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  status?: "active" | "inactive" | string;
+  code?: string;
+  region?: string;
+  population?: string;
+  applicationUrl?: string;
+}
+
 export default function Countries() {
-  // const countries = [
-  //   {
-  //     name: "United States",
-  //     description: "World-class universities offering diverse courses.",
-  //     code: "US",
-  //     slug: "united-states",
-  //   },
-  //   {
-  //     name: "United Kingdom",
-  //     description: "Home to historic universities with a global reputation.",
-  //     code: "GB",
-  //     slug: "united-kingdom",
-  //   },
-  //   {
-  //     name: "Canada",
-  //     description: "Known for quality education and multicultural diversity.",
-  //     code: "CA",
-  //     slug: "canada",
-  //   },
-  //   {
-  //     name: "Scotland",
-  //     description: "Famous for cutting-edge research and vibrant campus life.",
-  //     code: "GB",
-  //     slug: "scotland",
-  //   },
-  //   {
-  //     name: "New Zealand",
-  //     description: "Quality education in a stunning natural environment.",
-  //     code: "NZ",
-  //     slug: "new-zealand",
-  //   },
-  //   {
-  //     name: "Ireland",
-  //     description: "English-speaking education with rich cultural heritage.",
-  //     code: "IE",
-  //     slug: "ireland",
-  //   },
-  //   {
-  //     name: "Wales",
-  //     description: "Central European education with strong research focus.",
-  //     code: "GB",
-  //     slug: "wales",
-  //   },
-  // ];
   const router = useRouter();
 
   const handleNav = () => {
     router.push("apply-now");
   };
 
-  //const [currentPage, setCurrentPage] = useState(1);
   const { data: countryData, isLoading } = useCountries();
 
-  // Define a more flexible API response type
-  interface ApiCountryResponse {
-    _id?: number;
-    id?: number;
-    name?: string;
-    slug?: string;
-    flagCode?: string;
-    description?: string;
-    benefits?: string;
-    scholarships?: string;
-    visaRequirements?: string;
-    popularUniversities?: string;
-    costOfLiving?: string;
-    languageRequirements?: string;
-    createdAt?: string | Date;
-    updatedAt?: string | Date;
-    status?: "active" | "inactive" | string;
-    code?: string;
-    region?: string;
-    population?: string;
-    applicationUrl?: string;
-  }
-
   const countries: ApiCountryResponse[] = countryData?.data || [];
-  console.log("Country Data:", countries);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

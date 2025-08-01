@@ -28,7 +28,6 @@ import { IEvent } from "../admin/events/page";
 export default function EventPage() {
   const { data: eventData, isLoading } = useEvents();
   const events = eventData?.data || [];
-  console.log("Events data fetched:", events);
 
   const router = useRouter();
 

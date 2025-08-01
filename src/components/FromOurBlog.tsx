@@ -11,43 +11,19 @@ import {
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useBlogs } from "@/hooks/admin/queries/blogs";
+import { IBlog } from "@/app/admin/blog/page";
+import { Loader2 } from "lucide-react";
+import { formatDate } from "@/lib/helpers";
 
 const FromOurBlog = () => {
-  const articles = [
-    {
-      title: "5 Reasons to Study Abroad",
-      summary: "Exploring the top benefits of international education",
-      image: "/study.png",
-      date: "March 20, 2025",
-      author: "John Doe",
-    },
-    {
-      title: "Navigating the Student Application Process",
-      summary: "Tips and tricks for a successful application journey",
-      image: "/blog-2.jpg",
-      date: "April 3, 2025",
-      author: "Jane Smith",
-    },
-    {
-      title: "Post-Arrival Tips for International Students",
-      summary: "How to settle in your new environment smoothly",
-      image: "/blog-3.jpg",
-      date: "April 15, 2025",
-      author: "Emily Chang",
-    },
-    {
-      title: "Navigating the Student Application Process",
-      summary: "Tips and tricks for a successful application journey",
-      image: "/blog-4.jpg",
-      date: "April 3, 2025",
-      author: "Jane Smith",
-    },
-  ];
+  const { data: blogData, isLoading } = useBlogs();
+  const blogs = blogData?.data || [];
 
   const router = useRouter();
 
-  const handleNav = () => {
-    router.push("/blog");
+  const handleNav = (slug: string) => {
+    router.push(`/blog/${slug}`);
   };
 
   return (
@@ -70,50 +46,99 @@ const FromOurBlog = () => {
           >
             Get tips, advice, and updates on studying abroad
           </motion.p>
+          <Button
+            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => handleNav("")}
+          >
+            View All Blogs
+          </Button>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {articles.map((article, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="group"
-            >
-              <Card className="h-full transition-all duration-300 hover:shadow-lg border-0 bg-white overflow-hidden">
-                <div className="relative h-40">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-screen">
+              <p className="text-gray-500">Loading blogs...</p>
+              <Loader2 className="h-8 w-8 animate-spin text-gray-500 ml-2" />
+            </div>
+          ) : (
+            blogs.map((article: IBlog, index: number) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                className="group"
+              >
+                <Card className="h-full transition-all duration-300 hover:shadow-lg border-0 bg-white overflow-hidden">
+                  <div className="relative h-40">
+                    <Image
+                      src={(article.image as string) || "/blog-2.jpg"}
+                      alt={article.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
 
-                <CardHeader className="text-start">
-                  <CardTitle className="text-sm font-semibold text-gray-800 mt-4">
-                    {article.title}
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 mt-1">
-                    by {article.author} on {article.date}
-                  </CardDescription>
-                </CardHeader>
+                  <CardHeader className="text-start">
+                    <CardTitle className="text-sm font-semibold text-gray-800 mt-4">
+                      {article.title}
+                    </CardTitle>
+                    <CardDescription className="text-gray-500 mt-1">
+                      by {article.author} on{" "}
+                      {formatDate(article.createdAt as unknown as string)}
+                    </CardDescription>
+                  </CardHeader>
 
-                <CardContent className="text-start">
-                  <p className="text-gray-600 mb-4">{article.summary}</p>
+                  <CardContent className="text-start">
+                    <p className="text-gray-600 mb-4">{article.excerpt}</p>
 
-                  <Button
-                    onClick={handleNav}
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    Read More
+                    <Button
+                      onClick={() => handleNav(article.slug)}
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Read More
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))
+          )}
+          {/* {isLoading ? (
+            <div className="flex items-center justify-center h-screen">
+              <p className="text-gray-500">Loading blogs...</p>
+              <Loader2 className="h-8 w-8 animate-spin text-gray-500 ml-2" />
+            </div>
+          ) : (
+            blogs.map((blog: IBlog) => (
+              <Link
+                key={blog.slug}
+                href={`/blog/${blog.slug}`}
+                className="w-full h-full block rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-white"
+              >
+                <Image
+                  src={
+                    typeof blog.image === "string" ? blog.image : "/blog-2.jpg"
+                  }
+                  alt={blog.title}
+                  width={600}
+                  height={400}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                    {blog.title}
+                  </h2>
+                  <p className="text-sm text-primary hover:underline">
+                    {blog.excerpt || "Read this blog to learn more!"}
+                  </p>
+                  <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+                    Read more tunde →
                   </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                </div>
+              </Link>
+            ))
+          )} */}
         </div>
       </div>
     </section>

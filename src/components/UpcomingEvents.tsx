@@ -9,45 +9,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin } from "lucide-react";
-import Image from "next/image";
+import {
+  Calendar,
+  Clock,
+  DollarSign,
+  GraduationCap,
+  Loader2,
+  MapPin,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEvents } from "@/hooks/admin/queries/events";
+import { formatDate } from "@/lib/helpers";
+import { Badge } from "./ui/badge";
+import { IEvent } from "@/app/admin/events/page";
 
 const UpcomingEvents = () => {
-  const events = [
-    {
-      title: "UK Study Expo - Virtual Edition",
-      description:
-        "Virtual event connecting students with top UK institutions and scholarship providers.",
-      date: "October 20, 2025",
-      time: "10:00 AM - 4:00 PM WAT",
-      location: "Online",
-      image: "/event-1.jpg",
-    },
-    {
-      title: "Mastering the Scholarship Application Process",
-      description:
-        "This live webinar will guide you through writing compelling applications for top scholarships.",
+  const { data: eventData, isLoading } = useEvents();
+  const events = eventData?.data || [];
 
-      date: "November 5, 2025",
-      time: "2:00 PM - 4:00 PM WAT",
-      location: "Online",
-      image: "/event-2.jpg",
-    },
-    {
-      title: "Meet and Greet - Study in United Kingdom ",
-      description:
-        "Learn about studying in Ireland and hear from scholarship reps at this exclusive event.",
-      date: "November 15, 2025",
-      time: "11:00 AM - 1:00 PM WAT",
-      location: "Online",
-      image: "/welcome.jpg",
-    },
-  ];
   const router = useRouter();
 
-  const handleNav = () => {
-    router.push("/register");
+  const handleNav = (path: string) => {
+    router.push(path);
   };
   return (
     <section className="py-20 bg-white">
@@ -69,63 +52,84 @@ const UpcomingEvents = () => {
           >
             Get tips, advice, and updates on studying abroad
           </motion.p>
+          <Button
+            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => handleNav("/events")}
+          >
+            View All Events
+          </Button>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.map((event, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="group"
-            >
-              <Card className="h-full transition-all duration-300 hover:shadow-lg border-0 bg-gray-50 overflow-hidden">
-                <div className="relative h-40">
-                  <Image
-                    src={event.image}
-                    alt={event.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                <CardHeader>
-                  <CardTitle className="text-sm font-semibold text-gray-800">
-                    {event.title}
-                  </CardTitle>
-                  <CardDescription className="text-gray-500">
-                    {event.description}
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">{event.date}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">{event.time}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">
-                      {event.location}
-                    </span>
-                  </div>
-                </CardContent>
-
-                <Button
-                  onClick={handleNav}
-                  size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white w-full rounded-t-none"
-                >
-                  Register Now
-                </Button>
-              </Card>
-            </motion.div>
-          ))}
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+            </div>
+          ) : events.length > 0 ? (
+            events.slice(0, 3).map((event: IEvent, index: number) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl">
+                  <CardHeader>
+                    <div className="flex justify-between items-start mb-2">
+                      <Badge variant="outline">{event.eventType}</Badge>
+                      <Badge variant="destructive">
+                        <span className="mr-2"> Deadline:</span>
+                        <Clock className="w-3 h-3 mr-1" />
+                        {formatDate(event.registrationDeadline as string)}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-xl font-bold">
+                      {event.title}
+                    </CardTitle>
+                    <CardDescription>
+                      Time: {event.time || "No time specified."}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p>{event.description}</p>
+                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                      <div className="flex items-center">
+                        <DollarSign className="w-4 h-4 mr-2" />
+                        {event.registrationFee}
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {event.location}
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {`${event.maxAttendees} attendees ` ||
+                          " no limit specified."}
+                      </div>
+                      <div className="flex items-center">
+                        <GraduationCap className="w-4 h-4 mr-2" />
+                        {event.speakers || " no speakers listed."}
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {formatDate(event.date)}
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => handleNav("/apply-now")}
+                      className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
+                    >
+                      Apply Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))
+          ) : (
+            <p className="col-span-2 text-center text-gray-600">
+              No Audience found matching your criteria.
+            </p>
+          )}
         </div>
       </div>
     </section>

@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 export default function BlogPage() {
   const { data: blogData, isLoading } = useBlogs();
   const blogs = blogData?.data || [];
-  console.log("Blogs data fetched:", blogs);
   return (
     <div className="min-h-screen">
       <section className="hero-gradient py-20">

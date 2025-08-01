@@ -3,8 +3,22 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useCountries } from "@/hooks/admin/queries/countries";
+import { ApiCountryResponse } from "@/app/countries/page";
+import Flag from "react-world-flags";
+
+function getFlagEmoji(code: string) {
+  if (!code || code.length !== 2) return "";
+  const base = 127397;
+  return String.fromCodePoint(
+    ...code
+      .toUpperCase()
+      .split("")
+      .map((c) => base + c.charCodeAt(0))
+  );
+}
 
 const ExploreDestinations = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -14,54 +28,9 @@ const ExploreDestinations = () => {
     undefined
   );
 
-  const destinations = [
-    {
-      name: "UK",
-      flag: "🇬🇧",
-      bgColor: "bg-red-50",
-    },
-    {
-      name: "USA",
-      flag: "🇺🇸",
-      bgColor: "bg-blue-50",
-    },
-    {
-      name: "Canada",
-      flag: "🇨🇦",
-      bgColor: "bg-red-50",
-    },
-    {
-      name: "Australia",
-      flag: "🇦🇺",
-      bgColor: "bg-green-50",
-    },
-    {
-      name: "Germany",
-      flag: "🇩🇪",
-      bgColor: "bg-yellow-50",
-    },
-    {
-      name: "France",
-      flag: "🇫🇷",
-      bgColor: "bg-blue-50",
-    },
-    {
-      name: "Japan",
-      flag: "🇯🇵",
-      bgColor: "bg-red-50",
-    },
-    {
-      name: "Singapore",
-      flag: "🇸🇬",
-      bgColor: "bg-purple-50",
-    },
-
-    {
-      name: "Netherlands",
-      flag: "🇳🇱",
-      bgColor: "bg-teal-50",
-    },
-  ];
+  const { data: countryData, isLoading } = useCountries();
+  const destinations: ApiCountryResponse[] = countryData?.data || [];
+  console.log("Country Data:", destinations);
 
   const itemWidth = 324; // Width of each destination card (300px + 24px gap)
   //const visibleItems = 3;
@@ -72,6 +41,7 @@ const ExploreDestinations = () => {
 
   // Auto-scroll functionality with seamless loop
   useEffect(() => {
+    if (isLoading) return;
     const startAutoScroll = () => {
       autoScrollRef.current = setInterval(() => {
         setCurrentIndex((prevIndex) => {
@@ -97,7 +67,18 @@ const ExploreDestinations = () => {
         clearInterval(autoScrollRef.current);
       }
     };
-  }, [totalItems]);
+  }, [isLoading, totalItems]);
+
+  const router = useRouter();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">Loading destinations...</p>
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500 ml-2" />
+      </div>
+    );
+  }
 
   // Handle manual navigation
   const handlePrevious = () => {
@@ -173,8 +154,6 @@ const ExploreDestinations = () => {
     }, 1000);
   };
 
-  const router = useRouter();
-
   const handleNav = () => {
     router.push("/countries");
   };
@@ -208,12 +187,17 @@ const ExploreDestinations = () => {
                   duration: 0.6,
                   delay: (index % totalItems) * 0.1,
                 }}
-                className={`${destination.bgColor} flex gap-2 items-center justify-center  rounded-lg px-8 py-4 text-center hover:shadow-lg transition-shadow duration-300`}
+                className={` flex gap-2 w-[300px]   items-center justify-center  rounded-lg px-8 py-4 text-center hover:shadow-lg transition-shadow duration-300`}
               >
-                <div className="text-6xl">{destination.flag}</div>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {destination.name}
-                </h3>
+                <div className="flex flex-col w-[300px] h-[100px]  items-center justify-center h-46 bg-gray-100 rounded-lg">
+                  <span className="text-4xl">
+                    {getFlagEmoji(destination.flagCode as string)}
+                  </span>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {destination.name}
+                  </h3>
+                </div>
+                {/* <div className="text-6xl">{destination.flagCode}</div> */}
               </motion.div>
             ))}
           </div>
