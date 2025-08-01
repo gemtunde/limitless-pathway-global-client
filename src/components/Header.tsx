@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+//import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -55,14 +55,14 @@ const Header = () => {
           </nav>
 
           {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* <div className="hidden md:flex items-center space-x-4">
             <Button variant="ghost" asChild>
               <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild>
               <Link href="/register">Sign Up</Link>
             </Button>
-          </div>
+          </div> */}
 
           {/* Mobile menu button */}
           <button
@@ -96,14 +96,14 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+              {/* <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
                 <Button variant="ghost" asChild className="justify-start">
                   <Link href="/login">Sign In</Link>
                 </Button>
                 <Button asChild className="justify-start">
                   <Link href="/register">Sign Up</Link>
                 </Button>
-              </div>
+              </div> */}
             </div>
           </motion.div>
         )}

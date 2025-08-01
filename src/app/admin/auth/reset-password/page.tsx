@@ -230,7 +230,7 @@ export default function ResetPassword() {
                   <p className="text-sm text-gray-600">
                     Already have an account?{" "}
                     <Link
-                      href="/login"
+                      href="/admin"
                       className="text-blue-600 hover:text-blue-500 font-medium"
                     >
                       Sign in

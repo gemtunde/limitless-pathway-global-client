@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/admin/layout/Header";
 import { Sidebar } from "@/components/admin/layout/Sidebar";
+import { usePathname } from "next/navigation";
 
 import React from "react";
 
@@ -10,14 +11,15 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  const isAuth = pathname.startsWith("/admin/auth");
   return (
     <div className="flex h-screen w-full">
-      <Sidebar />
+      {!isAuth && <Sidebar />}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-auto p-16 bg-muted/40">
-          {children}
-        </main>
+        {!isAuth && <Header />}
+        <main className="flex-1 overflow-auto bg-muted/40">{children}</main>
       </div>
     </div>
   );
