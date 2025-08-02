@@ -11,7 +11,7 @@ export const useCountries = (page = 1, limit = 10) => {
       );
       return response.data;
     },
-    refetchInterval: 3600000,
+    refetchOnWindowFocus: true,
   });
 };
 export const useCountryBySlug = (slug: string) => {
@@ -21,6 +21,6 @@ export const useCountryBySlug = (slug: string) => {
       const response = await axiosApi.get(`/countries/slug/${slug}`);
       return response.data;
     },
-    refetchInterval: 3600000,
+    refetchOnWindowFocus: true,
   });
 };

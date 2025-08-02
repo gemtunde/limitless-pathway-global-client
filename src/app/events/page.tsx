@@ -49,7 +49,7 @@ export default function EventPage() {
       </section>
 
       {/* Events */}
-      <section className="py-20 bg-white">
+      {/* <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8">
           {isLoading ? (
             <div className="flex items-center justify-center">
@@ -139,6 +139,110 @@ export default function EventPage() {
           ) : (
             <p className="col-span-2 text-center text-gray-600">
               No Audience found matching your criteria.
+            </p>
+          )}
+        </div>
+      </section> */}
+      {/* Events */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8">
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+            </div>
+          ) : events.length > 0 ? (
+            events.map((event: IEvent, index: number) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                {/* Added flex flex-col to make the card a flex container */}
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl flex flex-col">
+                  <CardHeader>
+                    <div className="flex justify-between items-start mb-2">
+                      <Badge variant="outline">{event.eventType}</Badge>
+                      <Badge variant="destructive">
+                        <span className="mr-2"> Deadline:</span>
+                        <Clock className="w-3 h-3 mr-1" />
+                        {formatDate(event.registrationDeadline as string)}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-xl font-bold">
+                      {event.title}
+                    </CardTitle>
+                    <CardDescription>
+                      Time: {event.time || "No time specified."}
+                    </CardDescription>
+                  </CardHeader>
+
+                  {/* Added flex-1 flex flex-col to make content fill remaining space */}
+                  <CardContent className="flex-1 flex flex-col">
+                    {/* Content wrapper that will grow to fill available space */}
+                    <div className="space-y-4 flex-1">
+                      <p>{event.description}</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <DollarSign className="w-4 h-4 mr-2" />
+                          {event.registrationFee}
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          {event.location}
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          {`${event.maxAttendees} attendees ` ||
+                            " no limit specified."}
+                        </div>
+                        <div className="flex items-center">
+                          <GraduationCap className="w-4 h-4 mr-2" />
+                          {event.speakers || " no speakers listed."}
+                        </div>
+                        <div className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-2" />
+                          {formatDate(event.date)}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold">Agenda:</h4>
+                        <p className="text-sm text-gray-600">
+                          {event.agenda || " no agenda available."}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Requirements:</h4>
+                        <p className="text-sm text-gray-600">
+                          {event.requirements || " no requirements available."}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold">Audience:</h4>
+                        <p className="list-disc list-inside text-sm text-gray-600">
+                          {event.targetAudience || "no Audience listed"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Button container that stays at the bottom */}
+                    <div className="mt-4 pt-4">
+                      <Button
+                        onClick={() => handleNav("/apply-now")}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        Apply Now
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))
+          ) : (
+            <p className="col-span-2 text-center text-gray-600">
+              No Events found matching your criteria.
             </p>
           )}
         </div>

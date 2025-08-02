@@ -69,7 +69,8 @@ const FromOurBlog = () => {
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 className="group"
               >
-                <Card className="h-full transition-all duration-300 hover:shadow-lg border-0 bg-white overflow-hidden">
+                {/* Added flex flex-col to make the card a flex container */}
+                <Card className="h-full transition-all duration-300 hover:shadow-lg border-0 bg-white overflow-hidden flex flex-col">
                   <div className="relative h-40">
                     <Image
                       src={(article.image as string) || "/blog-2.jpg"}
@@ -78,7 +79,6 @@ const FromOurBlog = () => {
                       className="object-cover"
                     />
                   </div>
-
                   <CardHeader className="text-start">
                     <CardTitle className="text-sm font-semibold text-gray-800 mt-4">
                       {article.title}
@@ -89,56 +89,28 @@ const FromOurBlog = () => {
                     </CardDescription>
                   </CardHeader>
 
-                  <CardContent className="text-start">
-                    <p className="text-gray-600 mb-4">{article.excerpt}</p>
+                  {/* Added flex-1 flex flex-col to make content fill remaining space */}
+                  <CardContent className="text-start flex-1 flex flex-col">
+                    {/* Content wrapper that will grow to fill available space */}
+                    <div className="flex-1">
+                      <p className="text-gray-600 mb-4">{article.excerpt}</p>
+                    </div>
 
-                    <Button
-                      onClick={() => handleNav(article.slug)}
-                      size="sm"
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      Read More
-                    </Button>
+                    {/* Button container that stays at the bottom */}
+                    <div>
+                      <Button
+                        onClick={() => handleNav(article.slug)}
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        Read More
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
             ))
           )}
-          {/* {isLoading ? (
-            <div className="flex items-center justify-center h-screen">
-              <p className="text-gray-500">Loading blogs...</p>
-              <Loader2 className="h-8 w-8 animate-spin text-gray-500 ml-2" />
-            </div>
-          ) : (
-            blogs.map((blog: IBlog) => (
-              <Link
-                key={blog.slug}
-                href={`/blog/${blog.slug}`}
-                className="w-full h-full block rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-white"
-              >
-                <Image
-                  src={
-                    typeof blog.image === "string" ? blog.image : "/blog-2.jpg"
-                  }
-                  alt={blog.title}
-                  width={600}
-                  height={400}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                    {blog.title}
-                  </h2>
-                  <p className="text-sm text-primary hover:underline">
-                    {blog.excerpt || "Read this blog to learn more!"}
-                  </p>
-                  <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
-                    Read more tunde →
-                  </Button>
-                </div>
-              </Link>
-            ))
-          )} */}
         </div>
       </div>
     </section>

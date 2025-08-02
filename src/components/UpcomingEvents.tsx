@@ -73,7 +73,8 @@ const UpcomingEvents = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl">
+                {/* Added flex flex-col to make the card a flex container */}
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl flex flex-col">
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline">{event.eventType}</Badge>
@@ -90,37 +91,66 @@ const UpcomingEvents = () => {
                       Time: {event.time || "No time specified."}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p>{event.description}</p>
-                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-2" />
-                        {event.registrationFee}
+
+                  {/* Added flex-1 flex flex-col to make content fill remaining space */}
+                  <CardContent className="flex-1 flex flex-col">
+                    {/* Content wrapper that will grow to fill available space */}
+                    <div className="space-y-4 flex-1">
+                      <p>{event.description}</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <DollarSign className="w-4 h-4 mr-2" />
+                          {event.registrationFee}
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          {event.location}
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          {`${event.maxAttendees} attendees ` ||
+                            " no limit specified."}
+                        </div>
+                        <div className="flex items-center">
+                          <GraduationCap className="w-4 h-4 mr-2" />
+                          {event.speakers || " no speakers listed."}
+                        </div>
+                        <div className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-2" />
+                          {formatDate(event.date)}
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {event.location}
+
+                      <div>
+                        <h4 className="font-semibold">Agenda:</h4>
+                        <p className="text-sm text-gray-600">
+                          {event.agenda || " no agenda available."}
+                        </p>
                       </div>
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {`${event.maxAttendees} attendees ` ||
-                          " no limit specified."}
+                      <div>
+                        <h4 className="font-semibold">Requirements:</h4>
+                        <p className="text-sm text-gray-600">
+                          {event.requirements || " no requirements available."}
+                        </p>
                       </div>
-                      <div className="flex items-center">
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        {event.speakers || " no speakers listed."}
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        {formatDate(event.date)}
+
+                      <div>
+                        <h4 className="font-semibold">Audience:</h4>
+                        <p className="list-disc list-inside text-sm text-gray-600">
+                          {event.targetAudience || "no Audience listed"}
+                        </p>
                       </div>
                     </div>
-                    <Button
-                      onClick={() => handleNav("/apply-now")}
-                      className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
-                    >
-                      Apply Now
-                    </Button>
+
+                    {/* Button container that stays at the bottom */}
+                    <div className="mt-4 pt-4">
+                      <Button
+                        onClick={() => handleNav("/apply-now")}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        Apply Now
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>

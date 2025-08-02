@@ -9,7 +9,7 @@ export const useBlogs = (page = 1, limit = 10) => {
       const response = await axiosApi.get(`/blog?page=${page}&limit=${limit}`);
       return response.data;
     },
-    refetchInterval: 3600000,
+    refetchOnWindowFocus: true,
   });
 };
 
@@ -20,6 +20,6 @@ export const useBlogBySlug = (slug: string) => {
       const response = await axiosApi.get(`/blog/slug/${slug}`);
       return response.data;
     },
-    refetchInterval: 3600000,
+    refetchOnWindowFocus: true,
   });
 };

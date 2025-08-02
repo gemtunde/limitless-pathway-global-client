@@ -9,6 +9,6 @@ export const useTeam = (page = 1, limit = 10) => {
       const response = await axiosApi.get(`/team?page=${page}&limit=${limit}`);
       return response.data;
     },
-    refetchInterval: 3600000,
+    refetchOnWindowFocus: true,
   });
 };

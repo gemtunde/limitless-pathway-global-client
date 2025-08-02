@@ -20,6 +20,58 @@ function getFlagEmoji(code: string) {
   );
 }
 
+// Component to handle flag display with fallback
+const FlagDisplay = ({
+  flagCode,
+  countryName,
+}: {
+  flagCode: string;
+  countryName: string;
+}) => {
+  const [useEmojiFlag, setUseEmojiFlag] = useState(true);
+  const [emojiSupported, setEmojiSupported] = useState(true);
+
+  useEffect(() => {
+    // Test if emoji flags are supported
+    const testEmoji = getFlagEmoji("US");
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (ctx) {
+      ctx.fillText(testEmoji, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const hasPixels = imageData.data.some((pixel) => pixel !== 0);
+      setEmojiSupported(hasPixels);
+      setUseEmojiFlag(hasPixels);
+    }
+  }, []);
+
+  if (useEmojiFlag && emojiSupported) {
+    return (
+      <span className="text-4xl" onError={() => setUseEmojiFlag(false)}>
+        {getFlagEmoji(flagCode)}
+      </span>
+    );
+  }
+
+  return (
+    <Flag
+      code={flagCode}
+      style={{
+        width: "48px",
+        height: "32px",
+        borderRadius: "4px",
+        objectFit: "cover",
+      }}
+      fallback={
+        <div className="w-12 h-8 bg-gray-300 rounded flex items-center justify-center text-xs font-bold text-gray-600">
+          {flagCode} <span className="sr-only">{countryName}</span>
+        </div>
+      }
+    />
+  );
+};
+
 const ExploreDestinations = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -33,7 +85,6 @@ const ExploreDestinations = () => {
   console.log("Country Data:", destinations);
 
   const itemWidth = 324; // Width of each destination card (300px + 24px gap)
-  //const visibleItems = 3;
   const totalItems = destinations.length;
 
   // Create duplicated destinations for seamless loop
@@ -187,17 +238,17 @@ const ExploreDestinations = () => {
                   duration: 0.6,
                   delay: (index % totalItems) * 0.1,
                 }}
-                className={` flex gap-2 w-[300px]   items-center justify-center  rounded-lg px-8 py-4 text-center hover:shadow-lg transition-shadow duration-300`}
+                className="flex gap-2 w-[300px] items-center justify-center rounded-lg px-8 py-4 text-center hover:shadow-lg transition-shadow duration-300"
               >
-                <div className="flex flex-col w-[300px] h-[100px]  items-center justify-center h-46 bg-gray-100 rounded-lg">
-                  <span className="text-4xl">
-                    {getFlagEmoji(destination.flagCode as string)}
-                  </span>
-                  <h3 className="text-xl font-semibold text-gray-900">
+                <div className="flex flex-col w-[300px] h-[100px] items-center justify-center bg-gray-100 rounded-lg">
+                  <FlagDisplay
+                    flagCode={destination.flagCode as string}
+                    countryName={destination.name as string}
+                  />
+                  <h3 className="text-xl font-semibold text-gray-900 mt-2">
                     {destination.name}
                   </h3>
                 </div>
-                {/* <div className="text-6xl">{destination.flagCode}</div> */}
               </motion.div>
             ))}
           </div>

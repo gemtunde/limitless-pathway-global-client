@@ -11,6 +11,6 @@ export const useScholarships = (page = 1, limit = 10) => {
       );
       return response.data;
     },
-    refetchInterval: 60000,
+    refetchOnWindowFocus: true,
   });
 };
