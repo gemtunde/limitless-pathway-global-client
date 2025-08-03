@@ -25,6 +25,7 @@ import { formatDate } from "@/lib/helpers";
 import { useEvents } from "@/hooks/admin/queries/events";
 import { IEvent } from "../admin/events/page";
 import HeroSection from "@/components/HeroSection";
+import { EventStatusBadge } from "@/components/ui/EventStatusBadge";
 
 {
   /* <SelectItem value="draft">Draft</SelectItem> */
@@ -33,35 +34,14 @@ import HeroSection from "@/components/HeroSection";
 // <SelectItem value="cancelled">Cancelled</SelectItem>
 // <SelectItem value="completed">Completed</SelectItem>
 
-type BadgeVariant =
-  | "default"
-  | "destructive"
-  | "outline"
-  | "secondary"
-  | "primary"
-  | null;
+// type BadgeVariant =
+//   | "default"
+//   | "destructive"
+//   | "outline"
+//   | "secondary"
+//   | "primary"
+//   | null;
 
-const StatusBadge = ({ status }: { status: string }) => {
-  const getBadgeVariant = (status: string): BadgeVariant => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return "primary";
-      case "published":
-        return "secondary";
-      case "cancelled":
-      case "draft":
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
-
-  return (
-    <Badge variant={getBadgeVariant(status)}>
-      {status === "published" ? "In Progress" : status}
-    </Badge>
-  );
-};
 export default function EventPage() {
   const { data: eventData, isLoading } = useEvents();
   const events = eventData?.data || [];
@@ -102,7 +82,7 @@ export default function EventPage() {
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline">{event.eventType}</Badge>
-                      <StatusBadge status={event.status} />
+                      <EventStatusBadge status={event.status} />
                       <Badge variant="outline">
                         <span className="mr-2"> Deadline:</span>
                         <Clock className="w-3 h-3 mr-1" />
