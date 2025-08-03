@@ -33,30 +33,31 @@ import { Scholarship } from "../admin/scholarships/page";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/helpers";
 import HeroSection from "@/components/HeroSection";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
-type BadgeVariant =
-  | "default"
-  | "destructive"
-  | "outline"
-  | "secondary"
-  | "primary"
-  | null;
+// type BadgeVariant =
+//   | "default"
+//   | "destructive"
+//   | "outline"
+//   | "secondary"
+//   | "primary"
+//   | null;
 
-export const StatusBadge = ({ status }: { status: string }) => {
-  const getBadgeVariant = (status: string): BadgeVariant => {
-    switch (status.toLowerCase()) {
-      case "active":
-        return "primary";
-      case "expired":
-      case "inactive":
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
+// export const StatusBadge = ({ status }: { status: string }) => {
+//   const getBadgeVariant = (status: string): BadgeVariant => {
+//     switch (status.toLowerCase()) {
+//       case "active":
+//         return "primary";
+//       case "expired":
+//       case "inactive":
+//         return "destructive";
+//       default:
+//         return "outline";
+//     }
+//   };
 
-  return <Badge variant={getBadgeVariant(status)}>{status}</Badge>;
-};
+//   return <Badge variant={getBadgeVariant(status)}>{status}</Badge>;
+// };
 
 export default function Scholarships() {
   const { data: scholarshipData, isLoading } = useScholarships();

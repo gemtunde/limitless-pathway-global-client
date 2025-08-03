@@ -10,8 +10,8 @@ import {
   ScholarshipFormData,
   scholarshipFormSchema,
 } from "@/lib/admin/validations";
-import ImageUploadZone from "./ImageUploadZone";
-import { useState } from "react";
+//import ImageUploadZone from "./ImageUploadZone";
+//import { useState } from "react";
 
 interface BannerFormProps {
   initialValues?: ScholarshipFormData;
@@ -34,9 +34,9 @@ export function BannerForm({
       image: undefined,
     },
   });
-  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  //const [bannerFile, setBannerFile] = useState<File | null>(null);
 
-  form.setValue("image", bannerFile);
+  //form.setValue("image", bannerFile);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -52,12 +52,12 @@ export function BannerForm({
         placeholder="Enter description"
         control={form.control}
       />
-      <ImageUploadZone
+      {/* <ImageUploadZone
         label="Banner Image"
         description="Upload a clear Banner Image"
         file={bannerFile}
         onChange={setBannerFile}
-      />
+      /> */}
 
       <div className="flex gap-2">
         <FormSubmitButton

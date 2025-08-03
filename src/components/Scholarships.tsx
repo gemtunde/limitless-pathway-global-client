@@ -22,7 +22,8 @@ import { Badge } from "./ui/badge";
 import { formatDate } from "@/lib/helpers";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { StatusBadge } from "@/app/scholarships/page";
+import { StatusBadge } from "./ui/StatusBadge";
+//import { StatusBadge } from "@/app/scholarships/page";
 
 const Scholarships = () => {
   const { data: scholarshipData, isLoading } = useScholarships();

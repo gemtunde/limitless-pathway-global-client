@@ -22,7 +22,7 @@ import { useEvents } from "@/hooks/admin/queries/events";
 import { formatDate } from "@/lib/helpers";
 import { Badge } from "./ui/badge";
 import { IEvent } from "@/app/admin/events/page";
-import { EventStatusBadge } from "@/app/events/page";
+//import { StatusBadge } from "@/app/events/page";
 
 const UpcomingEvents = () => {
   const { data: eventData, isLoading } = useEvents();
@@ -85,9 +85,9 @@ const UpcomingEvents = () => {
                     <CardTitle className="text-xl font-bold">
                       {event.title}
                     </CardTitle>
-                    <div className="w-1/3">
-                      <EventStatusBadge status={event.status} />
-                    </div>
+                    {/* <div className="w-1/3">
+                      <StatusBadge status={event.status} />
+                    </div> */}
                     <CardDescription>
                       Time: {event.time || "No time specified."}
                     </CardDescription>

@@ -5,7 +5,7 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import { X, Loader2, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
 

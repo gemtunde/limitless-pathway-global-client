@@ -41,7 +41,7 @@ type BadgeVariant =
   | "primary"
   | null;
 
-export const EventStatusBadge = ({ status }: { status: string }) => {
+const StatusBadge = ({ status }: { status: string }) => {
   const getBadgeVariant = (status: string): BadgeVariant => {
     switch (status.toLowerCase()) {
       case "completed":
@@ -102,7 +102,7 @@ export default function EventPage() {
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline">{event.eventType}</Badge>
-                      <EventStatusBadge status={event.status} />
+                      <StatusBadge status={event.status} />
                       <Badge variant="outline">
                         <span className="mr-2"> Deadline:</span>
                         <Clock className="w-3 h-3 mr-1" />
