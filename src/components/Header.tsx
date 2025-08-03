@@ -47,7 +47,7 @@ const Header = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium"
+                className="text-gray-600 hover:text-[#ff814f] transition-colors duration-200 font-medium"
               >
                 {item.name}
               </Link>
@@ -67,7 +67,7 @@ const Header = () => {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
+            className="md:hidden p-2 rounded-md text-gray-600 hover:text-[#ff814f] hover:bg-gray-100 transition-colors duration-200"
           >
             {isMenuOpen ? (
               <X className="h-6 w-6" />
@@ -90,7 +90,7 @@ const Header = () => {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium"
+                  className="text-gray-600 hover:text-[#ff814f] transition-colors duration-200 font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
