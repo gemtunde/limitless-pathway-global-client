@@ -67,7 +67,7 @@ const Hero = () => {
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             YOUR GLOBAL FUTURE
-            <span className="block text-yellow-400">STARTS HERE</span>
+            <span className="block text-[#ff814f]">STARTS HERE</span>
           </h1>
 
           <p className="text-xl text-blue-100 mb-8 max-w-2xl">
@@ -77,7 +77,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold"
+              // className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold"
               onClick={() => handleNav("/apply-now")}
             >
               Apply Now

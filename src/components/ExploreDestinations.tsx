@@ -270,7 +270,7 @@ const ExploreDestinations = () => {
           <Button
             onClick={handleNav}
             size="lg"
-            className="bg-blue-600 hover:bg-blue-700"
+            //className="bg-blue-600 hover:bg-blue-700"
           >
             View All Destinations
           </Button>

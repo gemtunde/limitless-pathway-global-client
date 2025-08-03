@@ -1,32 +1,32 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Mail, Phone, Linkedin } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Mail, Phone, Linkedin } from "lucide-react";
 
 const GetInTouch = () => {
   const contactInfo = [
     {
       icon: Mail,
-      title: 'Email',
-      info: 'info@limitlessglobalpathways.com',
-      link: 'mailto:info@limitlessglobalpathways.com',
+      title: "Email",
+      info: "info@limitlessglobalpathways.com",
+      link: "mailto:info@limitlessglobalpathways.com",
     },
     {
       icon: Phone,
-      title: 'Phone',
-      info: '+44 7041948285',
-      link: 'tel:+447041948285',
+      title: "Phone",
+      info: "+44 7041948285",
+      link: "tel:+447041948285",
     },
     {
       icon: Linkedin,
-      title: 'LinkedIn',
-      info: '@limitlessglobalpathways',
-      link: 'https://linkedin.com/company/limitlessglobalpathways',
+      title: "LinkedIn",
+      info: "@limitlessglobalpathways",
+      link: "https://linkedin.com/company/limitlessglobalpathways",
     },
   ];
 
   return (
-    <section className="py-20 bg-gray-900">
+    <section className="py-20 bg-[#ff814f]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <motion.h2
@@ -41,7 +41,7 @@ const GetInTouch = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg text-gray-300 max-w-3xl mx-auto"
+            className="text-lg text-white max-w-3xl mx-auto"
           >
             Feel free to contact us for information below
           </motion.p>
@@ -58,13 +58,15 @@ const GetInTouch = () => {
             >
               <a
                 href={contact.link}
-                className="group block p-8 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-300"
+                className="group block p-8 bg-gray-100 rounded-lg hover:bg-gray-300 transition-colors duration-300"
               >
-                <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500 transition-colors duration-300">
+                <div className="bg-[#ff814f] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500 transition-colors duration-300">
                   <contact.icon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{contact.title}</h3>
-                <p className="text-gray-300">{contact.info}</p>
+                <h3 className="text-xl font-semibold text-black mb-2">
+                  {contact.title}
+                </h3>
+                <p className="text-black">{contact.info}</p>
               </a>
             </motion.div>
           ))}

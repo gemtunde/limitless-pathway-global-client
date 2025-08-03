@@ -14,6 +14,7 @@ import Footer from "@/components/Footer";
 import { useFaq } from "@/hooks/admin/queries/faq";
 import { IFaq } from "../admin/faq/page";
 import { Badge } from "@/components/ui/badge";
+import HeroSection from "@/components/HeroSection";
 
 // const faqData = [
 //   {
@@ -102,24 +103,12 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="hero-gradient py-20">
-        <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Frequently Asked Questions
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Everything you need to know about studying abroad and how
-              Limitless Global Pathways can support you.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+
+      <HeroSection
+        image="https://images.unsplash.com/photo-1562774053-701939374585?w=1920&h=1080&fit=crop"
+        title="Frequently Asked Questions"
+        description="Everything you need to know about studying abroad and how Limitless Global Pathways can support you."
+      />
 
       {/* FAQ Section */}
       <section className="py-20 bg-white">
@@ -153,7 +142,7 @@ export default function FAQPage() {
                         />
                       </CollapsibleTrigger>
                       <CollapsibleContent className=" flex flex-col gap-2 p-6 pb-4 text-gray-700 text-sm whitespace-pre-line">
-                        <Badge variant="default" className="py-2 px-4 w-fit">
+                        <Badge className="bg-[#ff814f] text-white py-2 px-4 w-fit">
                           {faq.category}
                         </Badge>
                         {faq.answer}
@@ -167,7 +156,7 @@ export default function FAQPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-blue-600">
+      <section className="py-20 bg-[#ff814f]">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -177,14 +166,11 @@ export default function FAQPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Still have questions?
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-white mb-8 max-w-2xl mx-auto">
               Reach out to our expert advisors for personalized guidance and
               support on your study abroad journey.
             </p>
-            <Button
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold"
-              size="lg"
-            >
+            <Button variant="outline" className=" text-black" size="lg">
               Contact Us
             </Button>
           </motion.div>

@@ -1,18 +1,26 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Quote } from 'lucide-react';
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Quote } from "lucide-react";
 
 const Testimonials = () => {
   const testimonials = [
     {
-      quote: "Limitless Global Pathways made my dream of studying in the UK possible.",
+      quote:
+        "Limitless Global Pathways made my dream of studying in the UK possible.",
       name: "Amira Yusuf",
       location: "Nigeria",
     },
     {
-      quote: "The team helped me secure a scholarship I didn&apos;t even know I was eligible for.",
+      quote:
+        "The team helped me secure a scholarship I didn&apos;t even know I was eligible for.",
       name: "Samuel Mensah",
       location: "Ghana",
     },
@@ -56,7 +64,7 @@ const Testimonials = () => {
             >
               <Card className="h-full transition-all duration-300 hover:shadow-lg border-0 bg-gray-100">
                 <CardHeader className="text-center">
-                  <Quote className="h-8 w-8 text-blue-600 mx-auto mb-4" />
+                  <Quote className="h-8 w-8 text-[#ff814f] mx-auto mb-4" />
                   <CardTitle className="text-xl font-semibold text-gray-800">
                     {testimonial.quote}
                   </CardTitle>
@@ -76,4 +84,3 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
-

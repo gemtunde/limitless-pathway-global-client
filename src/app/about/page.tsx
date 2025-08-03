@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useTeam } from "@/hooks/admin/queries/team";
 import { ITeam } from "../admin/team/page";
+import HeroSection from "@/components/HeroSection";
 
 export default function About() {
   // const members = [
@@ -74,24 +75,12 @@ export default function About() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              About Limitless Global Pathways
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Your trusted partner in making international education dreams a
-              reality
-            </p>
-          </motion.div>
-        </div>
-      </section>
+
+      <HeroSection
+        image="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1920&h=1080&fit=crop"
+        title="About Limitless Global Pathways"
+        description="Your trusted partner in making international education dreams a reality"
+      />
 
       {/* Mission Section */}
       <section className="py-20 bg-white">
@@ -136,7 +125,8 @@ export default function About() {
               <div className="flex flex-col sm:flex-row gap-4 my-4 justify-center">
                 <Button
                   size="lg"
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold"
+                  variant="outline"
+                  // className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold"
                   onClick={() => handleNav("/apply-now")}
                 >
                   Apply Now
@@ -146,7 +136,7 @@ export default function About() {
                   onClick={() => handleNav("/contact")}
                   size="lg"
                   // variant="secondary"
-                  className="border-white text-white hover:bg-white hover:text-blue-600"
+                  className="border-white text-white hover:bg-white hover:text-[#ff814f] "
                 >
                   Contact Us
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -203,8 +193,8 @@ export default function About() {
               >
                 <Card className="h-full text-center border-0 shadow-lg">
                   <CardHeader>
-                    <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <value.icon className="h-8 w-8 text-blue-600" />
+                    <div className="bg-[#ff814f] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <value.icon className="h-8 w-8 text-white" />
                     </div>
                     <CardTitle className="text-xl font-semibold text-gray-900">
                       {value.title}

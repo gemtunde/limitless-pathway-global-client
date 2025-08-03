@@ -1,90 +1,158 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { UploadCloud, X } from "lucide-react";
+import { useState } from "react";
+import { useUploadThing } from "@/lib/uploadthing";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import { toast } from "sonner";
 import Image from "next/image";
-import { useDropzone } from "react-dropzone";
 
-type Props = {
+interface ImageUploadZoneProps {
   label: string;
-  description?: string;
-  file: File | null;
-  onChange: (file: File | null) => void;
-};
+  description: string;
+  value?: string; // URL string
+  onChange: (url: string | null) => void;
+  disabled?: boolean;
+}
 
 export default function ImageUploadZone({
   label,
   description,
-  file,
+  value,
   onChange,
-}: Props) {
-  const [error, setError] = useState<string | null>(null);
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const selected = acceptedFiles[0];
-      if (!selected) return;
-      const maxSizeMB = 3;
-      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  disabled = false,
+}: ImageUploadZoneProps) {
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
-      if (selected.size > maxSizeMB * 1024 * 1024) {
-        setError(`Image too large. Max size is ${maxSizeMB}MB`);
-        return;
+  const { startUpload } = useUploadThing("blogImageUploader", {
+    onClientUploadComplete: (res) => {
+      setIsUploading(false);
+      if (res && res[0]) {
+        onChange(res[0].url);
+        toast.success("Image uploaded successfully!");
       }
-
-      if (!allowedTypes.includes(selected.type)) {
-        setError("Invalid file type. Use JPEG, PNG, or WEBP.");
-        return;
-      }
-      setError(null);
-      if (selected) onChange(selected);
     },
-    [onChange]
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple: false,
-    accept: { "image/*": [] },
+    onUploadError: (error: Error) => {
+      setIsUploading(false);
+      toast.error(`Upload failed: ${error.message}`);
+    },
   });
 
-  const handleRemove = () => onChange(null);
+  const handleFileSelect = async (files: File[]) => {
+    if (files.length === 0) return;
+
+    const file = files[0];
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (4MB)
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("File size must be less than 4MB");
+      return;
+    }
+
+    setIsUploading(true);
+    await startUpload([file]);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    handleFileSelect(files);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const removeImage = () => {
+    onChange(null);
+  };
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-bold text-gray-700">{label}</p>
-      <p className="text-sm font-medium text-gray-700">{description}</p>
+      <Label>{label}</Label>
+      <p className="text-sm text-muted-foreground">{description}</p>
 
-      {file ? (
-        <div className="relative w-40 h-40 rounded-lg overflow-hidden border border-gray-200">
-          <Image
-            src={URL.createObjectURL(file)}
-            alt="preview"
-            fill
-            className="object-cover"
-          />
-          <button
+      {value ? (
+        <div className="relative">
+          <div className="relative w-full h-48 border rounded-lg overflow-hidden">
+            <Image
+              src={value}
+              alt="Uploaded image"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <Button
             type="button"
-            onClick={handleRemove}
-            className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-sm"
+            variant="destructive"
+            size="sm"
+            className="absolute top-2 right-2"
+            onClick={removeImage}
+            disabled={disabled || isUploading}
           >
-            <X className="w-4 h-4 text-red-500" />
-          </button>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       ) : (
         <div
-          {...getRootProps()}
-          className={`flex flex-col items-center justify-center border-2 border-dashed p-6 rounded-lg text-center cursor-pointer transition-colors ${
-            isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"
-          }`}
+          className={`
+            relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+            ${dragActive ? "border-primary bg-primary/5" : "border-gray-300 hover:border-primary"}
+            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+          `}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
         >
-          <input {...getInputProps()} />
-          <UploadCloud className="w-6 h-6 text-gray-400 mb-2" />
-          <p className="text-sm text-gray-500">
-            Drag & drop or <span className="underline">browse</span>
-          </p>
+          <Input
+            type="file"
+            accept="image/*"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            onChange={(e) => handleFileSelect(Array.from(e.target.files || []))}
+            disabled={disabled || isUploading}
+          />
+
+          <div className="flex flex-col items-center space-y-2">
+            {isUploading ? (
+              <>
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">Uploading...</p>
+              </>
+            ) : (
+              <>
+                <ImageIcon className="h-8 w-8 text-gray-400" />
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium text-primary">
+                    Click to upload
+                  </span>{" "}
+                  or drag and drop
+                </div>
+                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 4MB</p>
+              </>
+            )}
+          </div>
         </div>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 }

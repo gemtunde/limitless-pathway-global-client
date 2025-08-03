@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, Clock } from "lucide-react";
 import { contactFormSchema, ContactFormData } from "@/lib/validations";
 import Footer from "@/components/Footer";
+import HeroSection from "@/components/HeroSection";
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,25 +84,12 @@ export default function Contact() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Contact Us
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Ready to start your international education journey? We are here
-              to guide you every step of the way to secure admission at top
-              universities worldwide.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+
+      <HeroSection
+        image="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&h=1080&fit=crop"
+        title="Contact Us"
+        description="Ready to start your international education journey? We are here to guide you every step of the way to secure admission at top universities worldwide."
+      />
 
       {/* Contact Info Section */}
       <section className="py-20 bg-gray-50">
@@ -116,8 +104,8 @@ export default function Contact() {
               >
                 <Card className="text-center border-0 shadow-lg h-full">
                   <CardHeader>
-                    <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <info.icon className="h-8 w-8 text-blue-600" />
+                    <div className="bg-[#ff814f] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <info.icon className="h-8 w-8 text-white" />
                     </div>
                     <CardTitle className="text-xl font-semibold text-gray-900">
                       {info.title}
@@ -290,7 +278,7 @@ export default function Contact() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full"
                     size="lg"
                   >
                     {isSubmitting ? "Sending..." : "Send Message"}

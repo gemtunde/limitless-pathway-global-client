@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { useService } from "@/hooks/admin/queries/service";
 import { Service } from "../admin/services/page";
 import React from "react";
+import HeroSection from "@/components/HeroSection";
 
 export default function Services() {
   const { data: serviceData, isLoading } = useService();
@@ -76,24 +77,11 @@ export default function Services() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Our Services
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Comprehensive support for your study abroad journey from start to
-              finish
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <HeroSection
+        image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&h=1080&fit=crop"
+        title="Our Services"
+        description="Comprehensive support for your study abroad journey from start to finish"
+      />
 
       {/* Services Section */}
       {/* Mission Section */}
@@ -107,7 +95,7 @@ export default function Services() {
             >
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 Welcome to Limitless Global Pathways -{" "}
-                <span className="text-blue-600">
+                <span className="text-[#ff814f]">
                   Your Gateway to International Education
                 </span>
               </h2>
@@ -151,7 +139,8 @@ export default function Services() {
                 <Button
                   onClick={() => handleNav("/apply-now")}
                   size="lg"
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold"
+                  variant="outline"
+                  // className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold"
                 >
                   Apply Now
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -222,7 +211,7 @@ export default function Services() {
                 >
                   <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <CardHeader className="text-center">
-                      <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                      <div className="bg-[#ff814f] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
                         {"0" + (index + 1)}
                       </div>
                       {/* <div
@@ -238,7 +227,7 @@ export default function Services() {
                     </CardHeader>
                     <CardContent>
                       <p className="flex items-center text-sm text-gray-600">
-                        <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-[#ff814f] mr-2 flex-shrink-0" />
                         {service?.features || "Explore our features"}
                       </p>
 
@@ -292,7 +281,7 @@ export default function Services() {
               >
                 <Card className="text-center border-0 shadow-lg">
                   <CardHeader>
-                    <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                    <div className="bg-[#ff814f] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
                       {item.step}
                     </div>
                     <CardTitle className="text-xl font-semibold text-gray-900">
@@ -312,7 +301,7 @@ export default function Services() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
+      <section className="py-20 bg-[#ff814f]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -323,13 +312,13 @@ export default function Services() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Start Your Journey?
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-white mb-8 max-w-2xl mx-auto">
               Book a free consultation with our experts today and take the first
               step towards your study abroad goals.
             </p>
             <Button
               size="lg"
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold"
+              className="bg-white hover:bg-yellow-100 text-black font-semibold"
             >
               Book Free Consultation
             </Button>

@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/helpers";
 import { useEvents } from "@/hooks/admin/queries/events";
 import { IEvent } from "../admin/events/page";
+import HeroSection from "@/components/HeroSection";
 
 export default function EventPage() {
   const { data: eventData, isLoading } = useEvents();
@@ -38,111 +39,13 @@ export default function EventPage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="hero-gradient py-20 text-center text-white">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Event Opportunities
-        </h1>
-        <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-          Discover funding opportunities to make your study abroad dreams
-          affordable
-        </p>
-      </section>
 
-      {/* Events */}
-      {/* <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8">
-          {isLoading ? (
-            <div className="flex items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
-            </div>
-          ) : events.length > 0 ? (
-            events.map((event: IEvent, index: number) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge variant="outline">{event.eventType}</Badge>
-                      <Badge variant="destructive">
-                        <span className="mr-2"> Deadline:</span>
-                        <Clock className="w-3 h-3 mr-1" />
-                        {formatDate(event.registrationDeadline as string)}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-xl font-bold">
-                      {event.title}
-                    </CardTitle>
-                    <CardDescription>
-                      Time: {event.time || "No time specified."}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p>{event.description}</p>
-                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-2" />
-                        {event.registrationFee}
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {event.location}
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {`${event.maxAttendees} attendees ` ||
-                          " no limit specified."}
-                      </div>
-                      <div className="flex items-center">
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        {event.speakers || " no speakers listed."}
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        {formatDate(event.date)}
-                      </div>
-                    </div>
+      <HeroSection
+        image="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1920&h=1080&fit=crop"
+        title="Event Opportunities"
+        description="Discover funding opportunities to make your study abroad dreams affordable."
+      />
 
-                    <div>
-                      <h4 className="font-semibold">Agenda:</h4>
-                      <p className=" text-sm text-gray-600">
-                        {event.agenda || " no agenda available."}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">Requirements:</h4>
-                      <p className=" text-sm text-gray-600">
-                        {event.requirements || " no requirements available."}
-                      </p>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold">Audience:</h4>
-                      <p className="list-disc list-inside text-sm text-gray-600">
-                        {event.targetAudience || "no Audience listed"}
-                      </p>
-                    </div>
-
-                    <Button
-                      onClick={() => handleNav("/apply-now")}
-                      className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
-                    >
-                      Apply Now
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
-          ) : (
-            <p className="col-span-2 text-center text-gray-600">
-              No Audience found matching your criteria.
-            </p>
-          )}
-        </div>
-      </section> */}
       {/* Events */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8">
@@ -163,7 +66,7 @@ export default function EventPage() {
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline">{event.eventType}</Badge>
-                      <Badge variant="destructive">
+                      <Badge variant="outline">
                         <span className="mr-2"> Deadline:</span>
                         <Clock className="w-3 h-3 mr-1" />
                         {formatDate(event.registrationDeadline as string)}
@@ -231,7 +134,7 @@ export default function EventPage() {
                     <div className="mt-4 pt-4">
                       <Button
                         onClick={() => handleNav("/apply-now")}
-                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        className="w-full"
                       >
                         Apply Now
                       </Button>
@@ -249,7 +152,7 @@ export default function EventPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-blue-600 text-white text-center">
+      <section className="py-20 bg-[#ff814f] text-white text-center">
         <h2 className="text-3xl font-bold mb-4">
           Need Help Finding Scholarships?
         </h2>
@@ -257,7 +160,11 @@ export default function EventPage() {
           Our expert team can help you identify and apply for scholarships that
           match your profile and goals.
         </p>
-        <Button className="bg-yellow-400 text-black font-semibold hover:bg-yellow-500">
+        <Button
+          variant="outline"
+          className=" text-black"
+          onClick={() => handleNav("/contact")}
+        >
           Get Personalized Scholarship Guidance
         </Button>
       </section>

@@ -45,6 +45,13 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const countrySchema = z.object({
   name: z.string().min(1, "Country name is required"),
@@ -61,6 +68,17 @@ const countrySchema = z.object({
   costOfLiving: z.string().optional(),
   languageRequirements: z.string().optional(),
 });
+
+// Options for form selects
+const countryOptions = [
+  { value: "United-States", label: "United States" },
+  { value: "United-Kingdom", label: "United Kingdom" },
+  { value: "Canada", label: "Canada" },
+  { value: "New-Zealand", label: "New Zealand" },
+  { value: "Ireland", label: "Ireland" },
+  { value: "Scotland", label: "Scotland" },
+  { value: "Australia", label: "Australia" },
+];
 
 export type CountryFormData = z.infer<typeof countrySchema>;
 
@@ -347,7 +365,7 @@ export default function CountriesPage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
@@ -356,6 +374,38 @@ export default function CountriesPage() {
                       <FormControl>
                         <Input placeholder="Enter country name" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                /> */}
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country name</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select country" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {countryOptions.map((option) => (
+                            <SelectItem
+                              key={option.value}
+                              value={option.value}
+                              disabled={!option.value}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

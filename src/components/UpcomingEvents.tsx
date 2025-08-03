@@ -52,10 +52,7 @@ const UpcomingEvents = () => {
           >
             Get tips, advice, and updates on studying abroad
           </motion.p>
-          <Button
-            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => handleNav("/events")}
-          >
+          <Button className="mt-6" onClick={() => handleNav("/events")}>
             View All Events
           </Button>
         </div>
@@ -78,7 +75,7 @@ const UpcomingEvents = () => {
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline">{event.eventType}</Badge>
-                      <Badge variant="destructive">
+                      <Badge variant="outline">
                         <span className="mr-2"> Deadline:</span>
                         <Clock className="w-3 h-3 mr-1" />
                         {formatDate(event.registrationDeadline as string)}
@@ -146,7 +143,7 @@ const UpcomingEvents = () => {
                     <div className="mt-4 pt-4">
                       <Button
                         onClick={() => handleNav("/apply-now")}
-                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        className="w-full"
                       >
                         Apply Now
                       </Button>

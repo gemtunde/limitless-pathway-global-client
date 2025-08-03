@@ -8,29 +8,20 @@ import { useBlogs } from "@/hooks/admin/queries/blogs";
 import { IBlog } from "../admin/blog/page";
 import { TableSkeleton } from "@/components/table/TableSkeleton";
 import { Button } from "@/components/ui/button";
+import HeroSection from "@/components/HeroSection";
 
 export default function BlogPage() {
   const { data: blogData, isLoading } = useBlogs();
   const blogs = blogData?.data || [];
+  console.log("Blogs data:", blogs);
   return (
     <div className="min-h-screen">
-      <section className="hero-gradient py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Study Abroad Blog
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Limitless Global Pathways Blog,
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <HeroSection
+        image="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&h=1080&fit=crop"
+        title="Study Abroad Blog"
+        description="Ready to start your international education journey? We are here to guide you every step of the way to secure admission at top universities worldwide."
+      />
+
       <section className="w-full py-10 md:py-20 px-4 md:px-10 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -68,7 +59,9 @@ export default function BlogPage() {
 
                     {/* Button container that stays at the bottom */}
                     <div className="mt-4">
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                      <Button
+                      //className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
                         Read more →
                       </Button>
                     </div>

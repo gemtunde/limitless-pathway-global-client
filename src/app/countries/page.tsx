@@ -16,6 +16,7 @@ import Flag from "react-world-flags"; // Corrected flag import
 import { useRouter } from "next/navigation";
 import { useCountries } from "@/hooks/admin/queries/countries";
 import { Loader2 } from "lucide-react";
+import HeroSection from "@/components/HeroSection";
 
 export interface ApiCountryResponse {
   _id?: number;
@@ -53,7 +54,7 @@ export default function Countries() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient py-20">
+      {/* <section className="hero-gradient py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -70,7 +71,23 @@ export default function Countries() {
             </p>
           </motion.div>
         </div>
-      </section>
+      </section> */}
+      {/* <HeroSection
+        image="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&h=1080&fit=crop"
+        title="Study Destinations tunde"
+        description="Explore top study destinations and choose the right fit for your educational journey"
+      /> */}
+      {/* <HeroSection
+        image="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80"
+        //  image="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80"
+        title="Study Destinations"
+        description="Explore top study destinations and choose the right fit for your educational journey"
+      /> */}
+      <HeroSection
+        image="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&h=1080&fit=crop"
+        title="Study Destinations"
+        description="Explore top study destinations and choose the right fit for your educational journey"
+      />
 
       {/* Countries Section */}
       <section className="py-20 bg-white">
@@ -90,22 +107,20 @@ export default function Countries() {
                   className="flex-shrink-0 w-64"
                 >
                   <Link href={`/countries/${country.slug}`}>
-                    <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
+                    <Card className="h-[400px] border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col">
                       <div className="flex items-center justify-center h-28 bg-gray-100 rounded-t-lg">
                         <Flag code={country.flagCode} className="h-16 w-auto" />
                       </div>
-                      <CardHeader className="text-center">
+                      <CardHeader className="text-center flex-shrink-0">
                         <CardTitle className="text-xl font-bold text-gray-900">
                           {country.name}
                         </CardTitle>
-                        <CardDescription className="text-gray-600">
+                        <CardDescription className="text-gray-600 line-clamp-3">
                           {country.description}
                         </CardDescription>
                       </CardHeader>
-                      <CardContent className="text-center">
-                        <Button className="mt-4 bg-blue-600 hover:bg-blue-700">
-                          Learn More
-                        </Button>
+                      <CardContent className="text-center flex-grow flex flex-col justify-end">
+                        <Button className="mt-auto w-full">Learn More</Button>
                       </CardContent>
                     </Card>
                   </Link>
@@ -117,7 +132,7 @@ export default function Countries() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
+      <section className="py-20 bg-[#ff814f] ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -128,14 +143,15 @@ export default function Countries() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Need Help Choosing a Country?
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-white mb-8 max-w-2xl mx-auto">
               Talk to our experts and get personalized recommendations based on
               your preferences and goals.
             </p>
             <Button
               onClick={handleNav}
               size="lg"
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold"
+              variant="outline"
+              //className=" hover:bg-yellow-100 text-black font-semibold"
             >
               Get Started Now
             </Button>

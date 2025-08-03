@@ -32,6 +32,7 @@ import { useScholarships } from "@/hooks/admin/queries/scholarships";
 import { Scholarship } from "../admin/scholarships/page";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/helpers";
+import HeroSection from "@/components/HeroSection";
 
 export default function Scholarships() {
   const { data: scholarshipData, isLoading } = useScholarships();
@@ -76,15 +77,11 @@ export default function Scholarships() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="hero-gradient py-20 text-center text-white">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Scholarship Opportunities
-        </h1>
-        <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-          Discover funding opportunities to make your study abroad dreams
-          affordable
-        </p>
-      </section>
+      <HeroSection
+        image="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=1920&h=1080&fit=crop"
+        title="Scholarship Opportunities"
+        description="Discover funding opportunities to make your study abroad dreams affordable"
+      />
 
       {/* Filters */}
       <section className="py-10 bg-gray-50">
@@ -234,7 +231,7 @@ export default function Scholarships() {
                     <CardHeader>
                       <div className="flex justify-between items-start mb-2">
                         <Badge variant="outline">{scholarship.category}</Badge>
-                        <Badge variant="destructive">
+                        <Badge variant="outline">
                           <span className="mr-2"> Deadline:</span>
                           <Clock className="w-3 h-3 mr-1" />
                           {formatDate(scholarship.deadline)}
@@ -288,7 +285,7 @@ export default function Scholarships() {
                       <div className="mt-4 pt-4">
                         <Button
                           onClick={() => handleNav("/apply-now")}
-                          className="w-full bg-blue-600 hover:bg-blue-700"
+                          className="w-full"
                         >
                           Apply Now
                         </Button>
@@ -307,7 +304,7 @@ export default function Scholarships() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-blue-600 text-white text-center">
+      <section className="py-20 bg-[#ff814f] text-white text-center">
         <h2 className="text-3xl font-bold mb-4">
           Need Help Finding Scholarships?
         </h2>
@@ -315,7 +312,11 @@ export default function Scholarships() {
           Our expert team can help you identify and apply for scholarships that
           match your profile and goals.
         </p>
-        <Button className="bg-yellow-400 text-black font-semibold hover:bg-yellow-500">
+        <Button
+          variant="outline"
+          onClick={() => handleNav("/contact")}
+          className=" text-black "
+        >
           Get Personalized Scholarship Guidance
         </Button>
       </section>

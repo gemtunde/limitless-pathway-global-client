@@ -58,17 +58,27 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+//import ImageUploadZone from "@/components/form/ImageUploadZone";
+import ImageUploadZone from "@/components/form/ImageUploadZone";
 
 const blogSchema = z.object({
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
   excerpt: z.string().min(1, "Excerpt is required"),
   content: z.string().min(1, "Content is required"),
-  featuredImage: z
+  image: z
     .string()
     .url("Must be a valid image URL")
     .optional()
     .or(z.literal("")),
+
+  //image: z.string().optional(),
+  //image: z.any().optional(),
+  // image: z
+  //   .string()
+  //   .url("Must be a valid image URL")
+  //   .optional()
+  //   .or(z.literal("")),
   category: z.string().min(1, "Category is required"),
   tags: z.string().optional(),
   status: z.enum(["draft", "published", "archived"]),
@@ -86,7 +96,7 @@ export interface IBlog {
   slug: string;
   excerpt: string;
   content: string;
-  featuredImage?: string;
+  image?: string;
   category: string;
   tags?: string;
   status: "draft" | "published" | "archived";
@@ -129,7 +139,7 @@ export default function BlogPage() {
       slug: "",
       excerpt: "",
       content: "",
-      featuredImage: "",
+      image: "",
       category: "",
       tags: "",
       status: "draft",
@@ -139,6 +149,18 @@ export default function BlogPage() {
       readTime: "",
     },
   });
+  //const [bannerFile, setBannerFile] = useState<File | null>(null);
+
+  //form.setValue("image", bannerFile);
+  // const handleImageUpload = (file: File | null) => {
+  //   setBannerFile(file);
+  //   if (file) {
+  //     // Assuming you want to store the file name as the path
+  //     form.setValue("image", file.name);
+  //   } else {
+  //     form.setValue("image", "");
+  //   }
+  // };
 
   // Data fetching and mutations
   const [currentPage, setCurrentPage] = useState(1);
@@ -186,12 +208,17 @@ export default function BlogPage() {
   // Form submission handler
   const onSubmit = async (data: BlogFormData) => {
     try {
+      // If image is a filename (not URL and not empty), prepend base URL
+      // if (data.image && !data.image.startsWith("http") && data.image !== "") {
+      //   data.image = `${process.env.NEXT_PUBLIC_MEDIA_URL}/${data.image}`;
+      // }
       if (editingPost) {
         const res = await updateBlog.mutateAsync({ data, id: editingPost.id });
         toast.success(
           res.message || "Blog post has been updated successfully!"
         );
       } else {
+        console.log("Creating new blog post with data:", data);
         const res = await createBlog.mutateAsync(data);
         toast.success(
           res.message || "Blog post has been created successfully!"
@@ -561,7 +588,7 @@ export default function BlogPage() {
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="featuredImage"
                 render={({ field }) => (
@@ -572,6 +599,38 @@ export default function BlogPage() {
                         type="url"
                         placeholder="https://example.com/image.jpg"
                         {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
+              {/* <ImageUploadZone
+                label="Banner Image"
+                description="Upload a clear Banner Image"
+                file={bannerFile}
+                onChange={setBannerFile}
+              /> */}
+              {/* <ImageUploadZone
+                label="Banner Image"
+                description="Upload a clear Banner Image"
+                file={bannerFile}
+                onChange={(url) => setBannerFile(url)}
+              /> */}
+              {/* Image Upload Section */}
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Featured Image</FormLabel>
+                    <FormControl>
+                      <ImageUploadZone
+                        label=""
+                        description="Upload a featured image for your blog post (max 4MB)"
+                        value={field.value}
+                        onChange={(url) => field.onChange(url || "")}
+                        disabled={createBlog.isPending || updateBlog.isPending}
                       />
                     </FormControl>
                     <FormMessage />

@@ -46,10 +46,7 @@ const FromOurBlog = () => {
           >
             Get tips, advice, and updates on studying abroad
           </motion.p>
-          <Button
-            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => handleNav("")}
-          >
+          <Button className="mt-6" onClick={() => handleNav("")}>
             View All Blogs
           </Button>
         </div>
@@ -101,7 +98,7 @@ const FromOurBlog = () => {
                       <Button
                         onClick={() => handleNav(article.slug)}
                         size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        // className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         Read More
                       </Button>

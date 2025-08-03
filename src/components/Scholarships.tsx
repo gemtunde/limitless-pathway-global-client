@@ -47,12 +47,12 @@ const Scholarships = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg text-gray-600 max-w-3xl mx-auto"
+            className="text-lg text-gray-600 max-w-3xl mx-auto mb-4"
           >
             Explore the scholarships that can support your studies abroad
           </motion.p>
           <Button
-            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white"
+            // className="mt-6 bg-blue-600 hover:bg-blue-700 text-white"
             onClick={() => handleNav("scholarships")}
           >
             View All Scholarships
@@ -78,7 +78,7 @@ const Scholarships = () => {
                     <CardHeader>
                       <div className="flex justify-between items-start mb-2">
                         <Badge variant="outline">{scholarship.category}</Badge>
-                        <Badge variant="destructive">
+                        <Badge variant="outline">
                           <span className="mr-2"> Deadline:</span>
                           <Clock className="w-3 h-3 mr-1" />
                           {formatDate(scholarship.deadline)}
@@ -132,7 +132,7 @@ const Scholarships = () => {
                       <div className="mt-4 pt-4">
                         <Button
                           onClick={() => handleNav("/apply-now")}
-                          className="w-full bg-blue-600 hover:bg-blue-700"
+                          className="w-full"
                         >
                           Apply Now
                         </Button>

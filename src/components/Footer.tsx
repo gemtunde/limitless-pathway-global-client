@@ -13,7 +13,7 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-blue-900 py-12 text-white">
+    <footer className="bg-black py-12 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-5 gap-8">
           {/* Logo and Description */}
@@ -42,10 +42,10 @@ const Footer = () => {
               Your gateway to a successful academic journey.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-blue-200 hover:text-white">
+              <a href="#" className="text-blue-100 hover:text-white">
                 <i className="fab fa-facebook-f"></i>
               </a>
-              <a href="#" className="text-blue-200 hover:text-white">
+              <a href="#" className="text-blue-100 hover:text-white">
                 <i className="fab fa-twitter"></i>
               </a>
               <a href="#" className="text-blue-200 hover:text-white">
@@ -62,14 +62,14 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Featured Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-blue-200 hover:text-white">
+                <Link href="/about" className="text-white hover:text-[#ff814f]">
                   About Us
                 </Link>
               </li>
               <li>
                 <Link
                   href="/services"
-                  className="text-blue-200 hover:text-white"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   Services
                 </Link>
@@ -77,7 +77,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/scholarships"
-                  className="text-blue-200 hover:text-white"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   Scholarships
                 </Link>
@@ -85,7 +85,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/countries"
-                  className="text-blue-200 hover:text-white"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   Countries
                 </Link>
@@ -93,7 +93,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/contact"
-                  className="text-blue-200 hover:text-white"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   Contact
                 </Link>
@@ -106,29 +106,32 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/blog" className="text-blue-200 hover:text-white">
+                <Link href="/blog" className="text-white hover:text-[#ff814f]">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="text-blue-200 hover:text-white">
+                <Link
+                  href="/events"
+                  className="text-white hover:text-[#ff814f]"
+                >
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-blue-200 hover:text-white">
+                <Link href="/faq" className="text-white hover:text-[#ff814f]">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-blue-200 hover:text-white">
+                <Link href="#" className="text-white hover:text-[#ff814f]">
                   Support
                 </Link>
               </li>
               <li>
                 <Link
                   href="/privacy-policy"
-                  className="text-blue-200 hover:text-white"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   Privacy
                 </Link>
@@ -142,40 +145,40 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/countries/united-kingdom"
-                  className="text-blue-200 hover:text-white"
+                  href="/countries"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   United Kingdom
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/countries/united-states"
-                  className="text-blue-200 hover:text-white"
+                  href="/countries"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   United States
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/countries/canada"
-                  className="text-blue-200 hover:text-white"
+                  href="/countries"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   Canada
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/countries/ireland"
-                  className="text-blue-200 hover:text-white"
+                  href="/countries"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   Ireland
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/countries/wales"
-                  className="text-blue-200 hover:text-white"
+                  href="/countries"
+                  className="text-white hover:text-[#ff814f]"
                 >
                   Wales
                 </Link>
@@ -186,7 +189,7 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-yellow-800 mt-8 pt-8 flex flex-col md:flex-row md:justify-between items-center">
-          <p className="text-yellow-200 font-semibold text-sm mb-4 md:mb-0">
+          <p className="text-[#ff814f] font-semibold text-sm mb-4 md:mb-0">
             © 2025 Limitless Global Pathways. All rights reserved.
           </p>
           <div className="flex space-x-6">
