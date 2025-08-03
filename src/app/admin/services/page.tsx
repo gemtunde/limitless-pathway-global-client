@@ -58,10 +58,10 @@ import { formatDate } from "@/lib/helpers";
 // Zod schema for form validation
 const serviceSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  color: z.string().min(1, "Color is required"),
+  //color: z.string().min(1, "Color is required"),
   description: z.string().min(1, "Description is required"),
   features: z.string().min(1, "Features is required"),
-  icon: z.string().min(1, "Icon is required"),
+  //icon: z.string().min(1, "Icon is required"),
 });
 
 export type ServiceFormData = z.infer<typeof serviceSchema>;
@@ -70,32 +70,32 @@ export interface Service extends BaseTableData {
   id: string;
   _id: string;
   title: string;
-  color: string;
+  //color: string;
   description: string;
   features: string;
-  icon: string;
+  //icon: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 // Options for form selects
-const iconOptions = [
-  { value: "Users", label: "Users" },
-  { value: "GraduationCap", label: "GraduationCap" },
-  { value: "FileText", label: "FileText" },
-  { value: "Plane", label: "Plane" },
-  { value: "CreditCard", label: "CreditCard" },
-  { value: "CheckCircle", label: "CheckCircle" },
-];
+// const iconOptions = [
+//   { value: "Users", label: "Users" },
+//   { value: "GraduationCap", label: "GraduationCap" },
+//   { value: "FileText", label: "FileText" },
+//   { value: "Plane", label: "Plane" },
+//   { value: "CreditCard", label: "CreditCard" },
+//   { value: "CheckCircle", label: "CheckCircle" },
+// ];
 
-const colorOptions = [
-  { value: "red", label: "Red" },
-  { value: "green", label: "Green" },
-  { value: "blue", label: "Blue" },
-  { value: "yellow", label: "Yellow" },
-  { value: "purple", label: "Purple" },
-  { value: "orange", label: "Orange" },
-];
+// const colorOptions = [
+//   { value: "red", label: "Red" },
+//   { value: "green", label: "Green" },
+//   { value: "blue", label: "Blue" },
+//   { value: "yellow", label: "Yellow" },
+//   { value: "purple", label: "Purple" },
+//   { value: "orange", label: "Orange" },
+// ];
 
 export default function ServicesPage() {
   // Dialog states
@@ -113,9 +113,9 @@ export default function ServicesPage() {
     resolver: zodResolver(serviceSchema),
     defaultValues: {
       title: "",
-      color: "",
+      // color: "",
       features: "",
-      icon: "",
+      // icon: "",
       description: "",
     },
   });
@@ -193,9 +193,9 @@ export default function ServicesPage() {
     setEditingService(null);
     form.reset({
       title: "",
-      color: "",
+
       features: "",
-      icon: "",
+
       description: "",
     });
     setIsDialogOpen(true);
@@ -207,16 +207,16 @@ export default function ServicesPage() {
     { key: "description", label: "Description", sortable: true },
 
     { key: "features", label: "Features" },
-    {
-      key: "createdAt",
-      label: "Created At",
-      render: (value) => (
-        <div className="flex items-center">
-          <Calendar className="h-4 w-4 mr-1" />
-          {formatDate(value as string)}
-        </div>
-      ),
-    },
+    // {
+    //   key: "createdAt",
+    //   label: "Created At",
+    //   render: (value) => (
+    //     <div className="flex items-center">
+    //       <Calendar className="h-4 w-4 mr-1" />
+    //       {formatDate(value as string)}
+    //     </div>
+    //   ),
+    // },
   ];
 
   return (
@@ -297,7 +297,7 @@ export default function ServicesPage() {
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="color"
@@ -364,7 +364,7 @@ export default function ServicesPage() {
                   )}
                 />
 
-                {/* <FormField
+                <FormField
                   control={form.control}
                   name="status"
                   render={({ field }) => (
@@ -395,8 +395,8 @@ export default function ServicesPage() {
                       <FormMessage />
                     </FormItem>
                   )}
-                /> */}
-              </div>
+                />
+              </div> */}
 
               <FormField
                 control={form.control}

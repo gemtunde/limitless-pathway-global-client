@@ -22,6 +22,7 @@ import { Badge } from "./ui/badge";
 import { formatDate } from "@/lib/helpers";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { StatusBadge } from "@/app/scholarships/page";
 
 const Scholarships = () => {
   const { data: scholarshipData, isLoading } = useScholarships();
@@ -78,6 +79,7 @@ const Scholarships = () => {
                     <CardHeader>
                       <div className="flex justify-between items-start mb-2">
                         <Badge variant="outline">{scholarship.category}</Badge>
+
                         <Badge variant="outline">
                           <span className="mr-2"> Deadline:</span>
                           <Clock className="w-3 h-3 mr-1" />
@@ -87,6 +89,9 @@ const Scholarships = () => {
                       <CardTitle className="text-xl font-bold">
                         {scholarship.title}
                       </CardTitle>
+                      <div className="w-1/3">
+                        <StatusBadge status={scholarship.status} />
+                      </div>
                       <CardDescription>{scholarship.provider}</CardDescription>
                     </CardHeader>
 

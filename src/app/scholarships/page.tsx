@@ -34,6 +34,30 @@ import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/helpers";
 import HeroSection from "@/components/HeroSection";
 
+type BadgeVariant =
+  | "default"
+  | "destructive"
+  | "outline"
+  | "secondary"
+  | "primary"
+  | null;
+
+export const StatusBadge = ({ status }: { status: string }) => {
+  const getBadgeVariant = (status: string): BadgeVariant => {
+    switch (status.toLowerCase()) {
+      case "active":
+        return "primary";
+      case "expired":
+      case "inactive":
+        return "destructive";
+      default:
+        return "outline";
+    }
+  };
+
+  return <Badge variant={getBadgeVariant(status)}>{status}</Badge>;
+};
+
 export default function Scholarships() {
   const { data: scholarshipData, isLoading } = useScholarships();
   const scholarships = scholarshipData?.data || [];
@@ -231,6 +255,7 @@ export default function Scholarships() {
                     <CardHeader>
                       <div className="flex justify-between items-start mb-2">
                         <Badge variant="outline">{scholarship.category}</Badge>
+                        <StatusBadge status={scholarship.status} />
                         <Badge variant="outline">
                           <span className="mr-2"> Deadline:</span>
                           <Clock className="w-3 h-3 mr-1" />

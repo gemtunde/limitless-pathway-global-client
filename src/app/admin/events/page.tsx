@@ -646,8 +646,8 @@ export default function EventsPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="draft">Draft</SelectItem>
-                          <SelectItem value="published">Published</SelectItem>
+                          {/* <SelectItem value="draft">Draft</SelectItem> */}
+                          <SelectItem value="published">In Progress</SelectItem>
                           <SelectItem value="cancelled">Cancelled</SelectItem>
                           <SelectItem value="completed">Completed</SelectItem>
                         </SelectContent>
