@@ -160,7 +160,6 @@ export default function CountriesPage() {
   }
 
   const apiCountries: ApiCountryResponse[] = countryData?.data || [];
-  console.log("Country Data:", countryData);
 
   // Transform data to ensure it has the required id field and correct status type
   const transformedCountries: Country[] = apiCountries.map((country) => ({

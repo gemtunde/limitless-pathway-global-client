@@ -117,8 +117,8 @@ export function Sidebar({ className }: { className?: string }) {
   };
 
   return (
-    <div className={cn("pb-12 min-h-screen", className)}>
-      <div className="space-y-4 py-4 bg-black text-white h-full">
+    <div className={cn("pb-12 min-h-screen bg-black", className)}>
+      <div className="space-y-4 py-4  text-white h-full">
         <div className="px-3 py-2">
           <div className="mb-2 text-lg font-semibold">
             <Link href="/admin" className="flex items-center space-x-2">

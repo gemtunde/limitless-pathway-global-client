@@ -85,6 +85,7 @@ export type EventFormData = z.infer<typeof eventSchema>;
 
 export interface IEvent {
   id: string;
+  _id?: string;
   title: string;
   description: string;
   eventType: "virtual" | "in-person" | "hybrid";
@@ -144,7 +145,6 @@ export default function EventsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data: eventData, isLoading } = useEvents(currentPage, 10);
   const event = eventData?.data || [];
-  console.log("Events data fetched:", event);
 
   // Transform data to ensure it has the required id field
   const transformedEvents: IEvent[] = event.map((event: IEvent) => ({

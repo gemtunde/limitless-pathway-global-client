@@ -78,25 +78,6 @@ export interface Service extends BaseTableData {
   updatedAt: Date;
 }
 
-// Options for form selects
-// const iconOptions = [
-//   { value: "Users", label: "Users" },
-//   { value: "GraduationCap", label: "GraduationCap" },
-//   { value: "FileText", label: "FileText" },
-//   { value: "Plane", label: "Plane" },
-//   { value: "CreditCard", label: "CreditCard" },
-//   { value: "CheckCircle", label: "CheckCircle" },
-// ];
-
-// const colorOptions = [
-//   { value: "red", label: "Red" },
-//   { value: "green", label: "Green" },
-//   { value: "blue", label: "Blue" },
-//   { value: "yellow", label: "Yellow" },
-//   { value: "purple", label: "Purple" },
-//   { value: "orange", label: "Orange" },
-// ];
-
 export default function ServicesPage() {
   // Dialog states
   const [isDialogOpen, setIsDialogOpen] = useState(false);

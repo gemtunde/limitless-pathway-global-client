@@ -7,134 +7,41 @@ import {
   Users,
   //GraduationCap,
   Award,
-  MessageSquare,
+  //MessageSquare,
   Calendar,
   FileText,
   //TrendingUp,
   Globe,
   Mail,
+  Loader2,
   //Clock,
 } from "lucide-react";
 import Link from "next/link";
-
-// Mock data for dashboard stats
-const dashboardStats = {
-  totalApplications: 1247,
-  newApplications: 23,
-  totalScholarships: 156,
-  activeScholarships: 89,
-  totalCountries: 7,
-  blogPosts: 45,
-  publishedPosts: 38,
-  unreadMessages: 12,
-  upcomingEvents: 3,
-  teamMembers: 8,
-};
-
-const recentApplications = [
-  {
-    id: 1,
-    name: "John Doe",
-    country: "United Kingdom",
-    course: "Computer Science",
-    status: "new",
-    date: "2024-01-22",
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    country: "Canada",
-    course: "Business Administration",
-    status: "reviewing",
-    date: "2024-01-21",
-  },
-  {
-    id: 3,
-    name: "Michael Chen",
-    country: "United States",
-    course: "Medicine",
-    status: "contacted",
-    date: "2024-01-20",
-  },
-  {
-    id: 4,
-    name: "Aisha Ibrahim",
-    country: "Australia",
-    course: "Engineering",
-    status: "accepted",
-    date: "2024-01-19",
-  },
-];
-
-const recentMessages = [
-  {
-    id: 1,
-    name: "David Wilson",
-    subject: "UK Data Science Programs",
-    status: "unread",
-    date: "2024-01-22",
-  },
-  {
-    id: 2,
-    name: "Aisha Ibrahim",
-    subject: "Canadian Public Health",
-    status: "replied",
-    date: "2024-01-21",
-  },
-  {
-    id: 3,
-    name: "James Okafor",
-    subject: "Australian Engineering",
-    status: "read",
-    date: "2024-01-20",
-  },
-];
-
-const upcomingEvents = [
-  {
-    id: 1,
-    title: "UK Study Expo – Virtual",
-    date: "2025-10-20",
-    type: "virtual",
-    registered: 245,
-  },
-  {
-    id: 2,
-    title: "Canada Education Fair",
-    date: "2025-11-15",
-    type: "in-person",
-    registered: 156,
-  },
-  {
-    id: 3,
-    title: "USA University Webinar",
-    date: "2025-09-25",
-    type: "virtual",
-    registered: 89,
-  },
-];
+import { useService } from "@/hooks/admin/queries/service";
+import { Service } from "./services/page";
+import { useScholarships } from "@/hooks/admin/queries/scholarships";
+import { Scholarship } from "./scholarships/page";
+import { useEvents } from "@/hooks/admin/queries/events";
+import { IEvent } from "./events/page";
+import { useCountries } from "@/hooks/admin/queries/countries";
 
 export default function AdminDashboard() {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "new":
-        return "bg-blue-100 text-blue-800";
-      case "reviewing":
-        return "bg-yellow-100 text-yellow-800";
-      case "contacted":
-        return "bg-purple-100 text-purple-800";
-      case "accepted":
-        return "bg-green-100 text-green-800";
-      case "unread":
-        return "bg-red-100 text-red-800";
-      case "replied":
-        return "bg-green-100 text-green-800";
-      case "read":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  //services
+  const { data: serviceData, isLoading: isLoadingServices } = useService();
+  const services = serviceData?.data || [];
+
+  // scholarships
+  const { data: scholarshipData, isLoading: isLoadingScholarships } =
+    useScholarships();
+  const scholarships = scholarshipData?.data || [];
+
+  //events
+  const { data: eventData, isLoading: isLoadingEvents } = useEvents();
+  const events = eventData?.data || [];
+
+  //countries
+  const { data: countryData, isLoading: isLoadingCountries } = useCountries();
+  const countries = countryData?.data || [];
 
   return (
     <div className="space-y-8">
@@ -152,16 +59,20 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Applications
+              Total Services
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardStats.totalApplications.toLocaleString()}
+              {isLoadingServices ? (
+                <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+              ) : (
+                services.length || 0
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
-              +{dashboardStats.newApplications} new this week
+              services offered by your us
             </p>
           </CardContent>
         </Card>
@@ -169,47 +80,56 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Active Scholarships
+              Total Scholarships
             </CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardStats.activeScholarships}
+              {isLoadingScholarships ? (
+                <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+              ) : (
+                scholarships.length || 0
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
-              of {dashboardStats.totalScholarships} total scholarships
+              Scholarships available for students
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Study Countries
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Events</CardTitle>
             <Globe className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardStats.totalCountries}
+              {isLoadingEvents ? (
+                <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+              ) : (
+                events.length || 0
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
-              Available destinations
+              Upcoming events for students
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Unread Messages
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Countries</CardTitle>
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardStats.unreadMessages}
+              {isLoadingCountries ? (
+                <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+              ) : (
+                countries.length || 0
+              )}
+              {/* {dashboardStats.unreadMessages} */}
             </div>
             <p className="text-xs text-muted-foreground">Require attention</p>
           </CardContent>
@@ -222,15 +142,51 @@ export default function AdminDashboard() {
         <Card className="col-span-4">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent Applications</CardTitle>
+              <CardTitle>Recent Services</CardTitle>
               <Button variant="outline" size="sm" asChild>
-                <Link href="/admin/applications">View All</Link>
+                <Link href="/admin/services">View All</Link>
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentApplications.map((application) => (
+              {isLoadingServices ? (
+                <div className="flex items-center justify-center h-32">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : services.length === 0 ? (
+                <p className="text-center text-muted-foreground">
+                  No recent services available.
+                </p>
+              ) : (
+                services.slice(0, 4).map((service: Service) => (
+                  <div
+                    key={service._id}
+                    className="flex items-center justify-between p-4 rounded-lg border"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <Users className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{service.title}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {service.description}
+                        </p>
+                      </div>
+                    </div>
+                    {/* <div className="flex items-center space-x-2">
+                      {new Date(service.updatedAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </div> */}
+                  </div>
+                ))
+              )}
+
+              {/* {recentApplications.map((application) => (
                 <div
                   key={application.id}
                   className="flex items-center justify-between p-4 rounded-lg border"
@@ -250,9 +206,9 @@ export default function AdminDashboard() {
                     <Badge className={getStatusColor(application.status)}>
                       {application.status}
                     </Badge>
-                    {/* <span className="text-sm text-muted-foreground">
+                    <span className="text-sm text-muted-foreground">
                       {new Date(application.date).toLocaleDateString()}
-                    </span> */}
+                    </span>
                     {new Date(application.date).toLocaleDateString("en-GB", {
                       day: "2-digit",
                       month: "2-digit",
@@ -260,7 +216,7 @@ export default function AdminDashboard() {
                     })}
                   </div>
                 </div>
-              ))}
+              ))} */}
             </div>
           </CardContent>
         </Card>
@@ -310,7 +266,7 @@ export default function AdminDashboard() {
               </Button>
             </div>
 
-            <div className="pt-4 border-t">
+            {/* <div className="pt-4 border-t">
               <h4 className="font-medium mb-3">System Overview</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -328,7 +284,7 @@ export default function AdminDashboard() {
                   <span>{dashboardStats.upcomingEvents}</span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>
@@ -339,15 +295,49 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent Messages</CardTitle>
+              <CardTitle>Recent Scholarships</CardTitle>
               <Button variant="outline" size="sm" asChild>
-                <Link href="/admin/contact">View All</Link>
+                <Link href="/admin/scholarships">View All</Link>
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {recentMessages.map((message) => (
+              {isLoadingScholarships ? (
+                <div className="flex items-center justify-center h-32">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : services.length === 0 ? (
+                <p className="text-center text-muted-foreground">
+                  No recent scholarships available.
+                </p>
+              ) : (
+                scholarships.slice(0, 4).map((scholarship: Scholarship) => (
+                  <div
+                    key={scholarship._id}
+                    className="flex items-center justify-between p-3 rounded-lg border"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <Award className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">
+                          {scholarship.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground line-clamp-1">
+                          {scholarship.description}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="capitalize">
+                      {scholarship.category}
+                    </Badge>
+                  </div>
+                ))
+              )}
+
+              {/* recentMessages.map((message) => (
                 <div
                   key={message.id}
                   className="flex items-center justify-between p-3 rounded-lg border"
@@ -369,8 +359,8 @@ export default function AdminDashboard() {
                       {message.status}
                     </Badge>
                   </div>
-                </div>
-              ))}
+                </div> */}
+              {/* ))} */}
             </div>
           </CardContent>
         </Card>
@@ -387,39 +377,43 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {upcomingEvents.map((event) => (
-                <div
-                  key={event.id}
-                  className="flex items-center justify-between p-3 rounded-lg border"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium text-sm">{event.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(event.date).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        })}
-                        {/* {new Date(event.date).toLocaleDateString()} •{" "} */}
-                        {event.registered} registered
-                      </p>
-                      {/* 
-                      {new Date(application.date).toLocaleDateString("en-GB", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-})}
-
-                      */}
-                    </div>
-                  </div>
-                  <Badge variant="outline" className="capitalize">
-                    {event.type}
-                  </Badge>
+              {isLoadingEvents ? (
+                <div className="flex items-center justify-center h-32">
+                  <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
-              ))}
+              ) : services.length === 0 ? (
+                <p className="text-center text-muted-foreground">
+                  No recent events available.
+                </p>
+              ) : (
+                events.slice(0, 3).map((event: IEvent) => (
+                  <div
+                    key={event._id}
+                    className="flex items-center justify-between p-3 rounded-lg border"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium text-sm">{event.title}</p>
+                        <p className="font-medium text-sm">
+                          {" "}
+                          {event.registeredCount} registered
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(event.date).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="capitalize">
+                      {event.eventType}
+                    </Badge>
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
