@@ -3,15 +3,16 @@ import { AxiosError, AxiosResponse } from "axios";
 import axiosApi from "@/services/axiosApi";
 
 export type LoginResponseType = {
-  message: string;
-  // accessToken: string
-  // refreshToken: string
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    isEmailVerified: boolean;
+  data: {
+    message: string;
+    token: string;
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      isEmailVerified: boolean;
+    };
   };
 };
 

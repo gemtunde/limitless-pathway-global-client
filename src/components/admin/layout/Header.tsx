@@ -11,10 +11,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 //import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useLogout } from "@/hooks/admin/mutations/auth/useLogout";
+import { useAuthStore } from "@/stores/auth-store";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { LogOut, Menu, Settings, Sidebar } from "lucide-react";
+import { Loader2, LogOut, Menu, Sidebar } from "lucide-react";
 
 export function Header() {
+  const { user, isAuthenticated } = useAuthStore();
+  const logoutMutation = useLogout();
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  if (!isAuthenticated || !user) {
+    return null;
+  }
   return (
     <header className="sticky top-0 z-40 border-b bg-background">
       <div className="flex h-16 items-center justify-between px-4">
@@ -45,27 +65,35 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/admin-avatar.png" alt="Admin" />
-                  <AvatarFallback>AD</AvatarFallback>
+                  <AvatarImage src="/farida.jpeg" alt={user.firstName} />
+                  <AvatarFallback>{getInitials(user.firstName)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">Admin User</p>
+                  <p className="text-sm font-medium leading-none">
+                    {" "}
+                    {user.firstName}
+                  </p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    admin@limitlessglobalpathways.com
+                    {user.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
+
+              <DropdownMenuItem
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+                className="text-red-600 focus:text-red-600"
+              >
+                {logoutMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <LogOut className="mr-2 h-4 w-4" />
+                )}
                 <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>

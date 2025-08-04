@@ -20,6 +20,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import useLogin from "@/hooks/admin/mutations/auth/useLogin";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/auth-store";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,20 +38,26 @@ export default function Login() {
 
   // Mutations
   const login = useLogin();
+  const { setAuth } = useAuthStore();
 
   const onSubmit = async (data: LoginFormData) => {
     try {
       const response = await login.mutateAsync(data);
       if (response.status === 200) {
-        console.log("Login successful:", response.data);
+        console.log("Login successful:", response.data.data);
+        const { user, token } = response.data.data; // Adjust based on your API response structure
+        setAuth(user, token);
+        console.log("USER ====>>Login successful TKEN:", user, token);
         toast.success(
-          response.data.message || "User has been logged in successfully!"
+          response.data.data.message || "User has been logged in successfully!"
         );
         router.push("/admin");
       } else {
         // Handle error response
         console.error("Login failed:", response.data);
-        toast.error(response.data.message || "Login failed. Please try again.");
+        toast.error(
+          response.data.data.message || "Login failed. Please try again."
+        );
       }
     } catch (error) {
       console.error("Login error:", error);
