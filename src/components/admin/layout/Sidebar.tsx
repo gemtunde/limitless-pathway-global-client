@@ -117,13 +117,13 @@ export function Sidebar({ className }: { className?: string }) {
   };
 
   return (
-    <div className={cn("pb-12 min-h-screen bg-black", className)}>
+    <div className={cn("pb-12 min-h-screen bg-black w-[20%]", className)}>
       <div className="space-y-4 py-4  text-white h-full">
         <div className="px-3 py-2">
           <div className="mb-2 text-lg font-semibold">
             <Link href="/admin" className="flex items-center space-x-2">
               <Image
-                src="/logo-2.png"
+                src="/logo-4.png"
                 alt="Limitless Global Pathways Logo"
                 height={50}
                 width={100}

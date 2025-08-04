@@ -18,27 +18,17 @@ const Footer = () => {
         <div className="grid md:grid-cols-5 gap-8">
           {/* Logo and Description */}
           <div className="md:col-span-2">
-            {/* <Link href="/" className="flex items-center mb-4">
-              <Image
-                src="/logo-2.png"
-                alt="Limitless Global Pathways Logo"
-                height={50}
-                width={100}
-                className="object-contain h-16 w-auto brightness-0 invert"
-              />
-            </Link> */}
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <Image
-                src="/logo.png"
+                src="/logo-4.png"
                 alt="Limitless Global Pathways Logo"
                 height={50}
                 width={100}
-                className="object-contain h-17 w-auto brightness-0 invert"
-                //priority
+                className="object-contain h-18 w-auto"
               />
             </Link>
-            <p className="text-white text-2xl mb-0 max-w-md">
+            <p className="text-white text-2xl my-4 max-w-md">
               Your gateway to a successful academic journey.
             </p>
             <div className="flex space-x-4">

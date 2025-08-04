@@ -122,26 +122,6 @@ const UpcomingEvents = () => {
                           {formatDate(event.date)}
                         </div>
                       </div>
-
-                      <div>
-                        <h4 className="font-semibold">Agenda:</h4>
-                        <p className="text-sm text-gray-600">
-                          {event.agenda || " no agenda available."}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">Requirements:</h4>
-                        <p className="text-sm text-gray-600">
-                          {event.requirements || " no requirements available."}
-                        </p>
-                      </div>
-
-                      <div>
-                        <h4 className="font-semibold">Audience:</h4>
-                        <p className="list-disc list-inside text-sm text-gray-600">
-                          {event.targetAudience || "no Audience listed"}
-                        </p>
-                      </div>
                     </div>
 
                     {/* Button container that stays at the bottom */}
