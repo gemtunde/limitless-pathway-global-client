@@ -8,9 +8,9 @@ import { useRouter } from "next/navigation";
 
 const About = () => {
   const stats = [
-    { number: "10+", label: "Years Experience", icon: Award },
-    { number: "5000+", label: "Students Helped", icon: Users },
-    { number: "150+", label: "Countries", icon: MapPin },
+    { number: "1+", label: "Years Experience", icon: Award },
+    { number: "50+", label: "Students Helped", icon: Users },
+    { number: "5+", label: "Countries", icon: MapPin },
   ];
 
   const features = [

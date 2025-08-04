@@ -9,10 +9,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+//import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { Bell, LogOut, Menu, Search, Settings, Sidebar } from "lucide-react";
+import { LogOut, Menu, Settings, Sidebar } from "lucide-react";
 
 export function Header() {
   return (
@@ -30,16 +30,16 @@ export function Header() {
             </SheetContent>
           </Sheet>
 
-          <div className="relative w-64">
+          {/* <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search..." className="pl-8" />
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon">
+          {/* <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
-          </Button>
+          </Button> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

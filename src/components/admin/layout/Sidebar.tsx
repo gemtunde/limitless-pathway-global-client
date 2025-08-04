@@ -10,7 +10,7 @@ import { useState } from "react";
 import {
   Home,
   Users,
-  GraduationCap,
+  //GraduationCap,
   MapPin,
   Award,
   Calendar,
@@ -18,6 +18,7 @@ import {
   MessageSquare,
   //Settings,
 } from "lucide-react";
+import Image from "next/image";
 
 type MenuItem = {
   name: string;
@@ -117,12 +118,17 @@ export function Sidebar({ className }: { className?: string }) {
 
   return (
     <div className={cn("pb-12 min-h-screen", className)}>
-      <div className="space-y-4 py-4">
+      <div className="space-y-4 py-4 bg-black text-white h-full">
         <div className="px-3 py-2">
-          <div className="mb-2 px-4 text-lg font-semibold">
+          <div className="mb-2 text-lg font-semibold">
             <Link href="/admin" className="flex items-center space-x-2">
-              <GraduationCap className="h-6 w-6" />
-              <span>LGP Admin</span>
+              <Image
+                src="/logo-2.png"
+                alt="Limitless Global Pathways Logo"
+                height={50}
+                width={100}
+                className="object-contain h-18 w-auto"
+              />
             </Link>
           </div>
           <div className="space-y-1 mt-12">

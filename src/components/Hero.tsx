@@ -70,7 +70,7 @@ const Hero = () => {
             <span className="block text-[#ff814f]">STARTS HERE</span>
           </h1>
 
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl">
+          <p className="text-xl text-white mb-8 max-w-2xl">
             Explore study abroad opportunities worldwide
           </p>
 
@@ -86,7 +86,7 @@ const Hero = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-black hover:bg-white hover:text-blue-600"
+              className="border-white text-black hover:bg-white hover:text-[#ff814f] "
               onClick={() => handleNav("https://www.youtube.com/@Rkycareers")}
             >
               <Play className="mr-2 h-5 w-5" />

@@ -9,68 +9,68 @@ import { useCountries } from "@/hooks/admin/queries/countries";
 import { ApiCountryResponse } from "@/app/countries/page";
 import Flag from "react-world-flags";
 
-function getFlagEmoji(code: string) {
-  if (!code || code.length !== 2) return "";
-  const base = 127397;
-  return String.fromCodePoint(
-    ...code
-      .toUpperCase()
-      .split("")
-      .map((c) => base + c.charCodeAt(0))
-  );
-}
+// function getFlagEmoji(code: string) {
+//   if (!code || code.length !== 2) return "";
+//   const base = 127397;
+//   return String.fromCodePoint(
+//     ...code
+//       .toUpperCase()
+//       .split("")
+//       .map((c) => base + c.charCodeAt(0))
+//   );
+// }
 
 // Component to handle flag display with fallback
-const FlagDisplay = ({
-  flagCode,
-  countryName,
-}: {
-  flagCode: string;
-  countryName: string;
-}) => {
-  const [useEmojiFlag, setUseEmojiFlag] = useState(true);
-  const [emojiSupported, setEmojiSupported] = useState(true);
+// const FlagDisplay = ({
+//   flagCode,
+//   countryName,
+// }: {
+//   flagCode: string;
+//   countryName: string;
+// }) => {
+//   const [useEmojiFlag, setUseEmojiFlag] = useState(true);
+//   const [emojiSupported, setEmojiSupported] = useState(true);
 
-  useEffect(() => {
-    // Test if emoji flags are supported
-    const testEmoji = getFlagEmoji("US");
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+//   useEffect(() => {
+//     // Test if emoji flags are supported
+//     const testEmoji = getFlagEmoji("US");
+//     const canvas = document.createElement("canvas");
+//     const ctx = canvas.getContext("2d");
 
-    if (ctx) {
-      ctx.fillText(testEmoji, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const hasPixels = imageData.data.some((pixel) => pixel !== 0);
-      setEmojiSupported(hasPixels);
-      setUseEmojiFlag(hasPixels);
-    }
-  }, []);
+//     if (ctx) {
+//       ctx.fillText(testEmoji, 0, 0);
+//       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+//       const hasPixels = imageData.data.some((pixel) => pixel !== 0);
+//       setEmojiSupported(hasPixels);
+//       setUseEmojiFlag(hasPixels);
+//     }
+//   }, []);
 
-  if (useEmojiFlag && emojiSupported) {
-    return (
-      <span className="text-4xl" onError={() => setUseEmojiFlag(false)}>
-        {getFlagEmoji(flagCode)}
-      </span>
-    );
-  }
+//   if (useEmojiFlag && emojiSupported) {
+//     return (
+//       <span className="text-4xl" onError={() => setUseEmojiFlag(false)}>
+//         {getFlagEmoji(flagCode)}
+//       </span>
+//     );
+//   }
 
-  return (
-    <Flag
-      code={flagCode}
-      style={{
-        width: "48px",
-        height: "32px",
-        borderRadius: "4px",
-        objectFit: "cover",
-      }}
-      fallback={
-        <div className="w-12 h-8 bg-gray-300 rounded flex items-center justify-center text-xs font-bold text-gray-600">
-          {flagCode} <span className="sr-only">{countryName}</span>
-        </div>
-      }
-    />
-  );
-};
+//   return (
+//     <Flag
+//       code={flagCode}
+//       style={{
+//         width: "48px",
+//         height: "32px",
+//         borderRadius: "4px",
+//         objectFit: "cover",
+//       }}
+//       fallback={
+//         <div className="w-12 h-8 bg-gray-300 rounded flex items-center justify-center text-xs font-bold text-gray-600">
+//           {flagCode} <span className="sr-only">{countryName}</span>
+//         </div>
+//       }
+//     />
+//   );
+// };
 
 const ExploreDestinations = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -82,7 +82,7 @@ const ExploreDestinations = () => {
 
   const { data: countryData, isLoading } = useCountries();
   const destinations: ApiCountryResponse[] = countryData?.data || [];
-  console.log("Country Data:", destinations);
+  //console.log("Country Data:", destinations);
 
   const itemWidth = 324; // Width of each destination card (300px + 24px gap)
   const totalItems = destinations.length;
@@ -241,10 +241,12 @@ const ExploreDestinations = () => {
                 className="flex gap-2 w-[300px] items-center justify-center rounded-lg px-8 py-4 text-center hover:shadow-lg transition-shadow duration-300"
               >
                 <div className="flex flex-col w-[300px] h-[100px] items-center justify-center bg-gray-100 rounded-lg">
-                  <FlagDisplay
-                    flagCode={destination.flagCode as string}
-                    countryName={destination.name as string}
-                  />
+                  <div className="flex justify-center">
+                    <Flag
+                      code={destination.flagCode}
+                      style={{ width: 50, height: 30 }}
+                    />
+                  </div>
                   <h3 className="text-xl font-semibold text-gray-900 mt-2">
                     {destination.name}
                   </h3>

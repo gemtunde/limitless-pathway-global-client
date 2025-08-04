@@ -317,6 +317,7 @@ export default function Services() {
               step towards your study abroad goals.
             </p>
             <Button
+              onClick={() => handleNav("/apply-now")}
               size="lg"
               className="bg-white hover:bg-yellow-100 text-black font-semibold"
             >

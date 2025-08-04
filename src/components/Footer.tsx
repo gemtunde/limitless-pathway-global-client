@@ -124,7 +124,10 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-white hover:text-[#ff814f]">
+                <Link
+                  href="/contact"
+                  className="text-white hover:text-[#ff814f]"
+                >
                   Support
                 </Link>
               </li>

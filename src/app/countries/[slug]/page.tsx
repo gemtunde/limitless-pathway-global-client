@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Flag from "react-world-flags";
@@ -11,6 +11,7 @@ import { TableSkeleton } from "@/components/table/TableSkeleton";
 import Image from "next/image";
 
 export default function CountryPage() {
+  const router = useRouter();
   const params = useParams();
   const slug = typeof params?.slug === "string" ? params.slug : "";
 
@@ -22,6 +23,10 @@ export default function CountryPage() {
 
   if (!country) return notFound();
   if (isLoading) return <TableSkeleton rows={10} />;
+
+  const handleNav = (path: string) => {
+    router.push(path);
+  };
 
   return (
     <>
@@ -162,7 +167,7 @@ export default function CountryPage() {
             Start your journey to academic excellence in {country.name} with
             expert guidance and support
           </p>
-          <Button>Contact Now</Button>
+          <Button onClick={() => handleNav("/contact")}>Contact Now</Button>
         </motion.div>
       </main>
       <Footer />

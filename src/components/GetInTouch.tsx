@@ -26,14 +26,14 @@ const GetInTouch = () => {
   ];
 
   return (
-    <section className="py-20 bg-[#ff814f]">
+    <section className="py-20 bg-[#e0cfc72b]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-3xl md:text-4xl font-bold text-white mb-4"
+            className="text-3xl md:text-4xl font-bold text-black mb-4"
           >
             Get In Touch
           </motion.h2>
@@ -41,7 +41,7 @@ const GetInTouch = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg text-white max-w-3xl mx-auto"
+            className="text-lg text-black max-w-3xl mx-auto"
           >
             Feel free to contact us for information below
           </motion.p>
@@ -60,7 +60,7 @@ const GetInTouch = () => {
                 href={contact.link}
                 className="group block p-8 bg-gray-100 rounded-lg hover:bg-gray-300 transition-colors duration-300"
               >
-                <div className="bg-[#ff814f] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500 transition-colors duration-300">
+                <div className="bg-[#ff814f] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-black transition-colors duration-300">
                   <contact.icon className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-black mb-2">
