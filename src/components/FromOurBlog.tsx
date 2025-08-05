@@ -57,8 +57,8 @@ const FromOurBlog = () => {
               <p className="text-gray-500">Loading blogs...</p>
               <Loader2 className="h-8 w-8 animate-spin text-gray-500 ml-2" />
             </div>
-          ) : (
-            blogs.map((article: IBlog, index: number) => (
+          ) : blogs.length > 0 ? (
+            blogs.slice(0, 4).map((article: IBlog, index: number) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -107,6 +107,10 @@ const FromOurBlog = () => {
                 </Card>
               </motion.div>
             ))
+          ) : (
+            <p className="col-span-2 text-center text-gray-600">
+              No Blogs found matching your criteria.
+            </p>
           )}
         </div>
       </div>
