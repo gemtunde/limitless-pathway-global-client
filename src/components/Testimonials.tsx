@@ -64,7 +64,7 @@ const Testimonials = () => {
             >
               <Card className="h-full transition-all duration-300 hover:shadow-lg border-0 bg-gray-100">
                 <CardHeader className="text-center">
-                  <Quote className="h-8 w-8 text-[#ff814f] mx-auto mb-4" />
+                  <Quote className="h-8 w-8 text-[#fa4d32] mx-auto mb-4" />
                   <CardTitle className="text-xl font-semibold text-gray-800">
                     {testimonial.quote}
                   </CardTitle>

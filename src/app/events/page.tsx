@@ -169,7 +169,7 @@ export default function EventPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#ff814f] text-white text-center">
+      <section className="py-20 bg-[#fa4d32] text-white text-center">
         <h2 className="text-3xl font-bold mb-4">
           Need Help Finding Scholarships?
         </h2>

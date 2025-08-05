@@ -36,7 +36,45 @@ axiosInstance.interceptors.response.use(
     }
     return response;
   },
+  // (error) => {
+  //   if (error.response) {
+  //     console.error("🔴 API Error Response:", {
+  //       status: error.response.status,
+  //       statusText: error.response.statusText,
+  //       headers: error.response.headers,
+  //       data: error.response.data,
+  //       url: error.config?.url,
+  //       method: error.config?.method,
+  //     });
+  //   } else if (error.request) {
+  //     console.error("🟠 Network Error (no response):", {
+  //       message: error.message,
+  //       url: error.config?.url,
+  //     });
+  //   } else {
+  //     console.error("⚠️ Unknown Error:", {
+  //       message: error.message,
+  //     });
+  //   }
+
+  //   // For deep debugging
+  //   console.error("🧵 Raw Error Object:", error);
+
+  //   return Promise.reject(error);
+  // }
+  // In your response interceptor error handler, add this before the existing code:
   (error) => {
+    // Add this debugging block at the very beginning
+    console.log("🔍 DEBUGGING ERROR OBJECT:", {
+      hasResponse: !!error.response,
+      hasRequest: !!error.request,
+      errorType: error.constructor.name,
+      errorKeys: Object.keys(error),
+      errorMessage: error.message,
+      errorCode: error.code,
+      errorStack: error.stack?.split("\n").slice(0, 3), // First 3 lines of stack
+    });
+
     if (error.response) {
       console.error("🔴 API Error Response:", {
         status: error.response.status,
@@ -57,9 +95,7 @@ axiosInstance.interceptors.response.use(
       });
     }
 
-    // For deep debugging
     console.error("🧵 Raw Error Object:", error);
-
     return Promise.reject(error);
   }
 );

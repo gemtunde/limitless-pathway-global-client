@@ -140,7 +140,7 @@ export function Sidebar({ className }: { className?: string }) {
                     className={cn(
                       "flex items-center justify-between space-x-2 rounded-lg px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
                       isMenuActive(item)
-                        ? "bg-accent text-accent-foreground"
+                        ? "bg-accent text-[#fa4d32]"
                         : "transparent"
                     )}
                   >

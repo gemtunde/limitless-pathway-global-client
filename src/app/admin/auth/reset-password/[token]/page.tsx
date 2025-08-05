@@ -197,7 +197,7 @@ export default function ResetPassword() {
                   <Button
                     type="submit"
                     disabled={ResetPasswordMutation.isPending}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full"
                   >
                     {ResetPasswordMutation.isPending ? (
                       <>
@@ -269,7 +269,7 @@ export default function ResetPassword() {
                     Already have an account?{" "}
                     <Link
                       href="/admin/auth/login"
-                      className="text-blue-600 hover:text-blue-500 font-medium"
+                      className="text-[#fa4d32] hover:text-[#fa4d32] font-medium"
                     >
                       Sign in
                     </Link>

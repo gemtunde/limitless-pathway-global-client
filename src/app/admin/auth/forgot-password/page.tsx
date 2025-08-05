@@ -155,7 +155,7 @@ export default function ForgotPassword() {
                     <Button
                       type="submit"
                       disabled={ForgotPasswordMutation.isPending}
-                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      className="w-full"
                     >
                       {ForgotPasswordMutation.isPending ? (
                         <>
@@ -173,7 +173,7 @@ export default function ForgotPassword() {
                       Have an account?{" "}
                       <Link
                         href="/admin/auth/login"
-                        className="text-blue-600 hover:text-blue-500 font-medium"
+                        className="text-[#fa4d32] hover:text-[#fa4d32] font-medium"
                       >
                         Sign in
                       </Link>

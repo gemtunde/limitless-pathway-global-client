@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import HeroSection from "@/components/HeroSection";
 
 type CountryData = {
   flag: string;
@@ -122,7 +123,7 @@ export default function ApplyNow() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient py-20">
+      {/* <section className="hero-gradient py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -140,7 +141,14 @@ export default function ApplyNow() {
             </p>
           </motion.div>
         </div>
-      </section>
+      </section> */}
+      <HeroSection
+        image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&h=1080&fit=crop"
+        title=" Apply Now"
+        description=" Ready to start your international education journey? We are here
+              to guide you every step of the way to secure admission at top
+              universities worldwide."
+      />
 
       {/* Contact Form Section */}
       <section className="py-20 bg-white">
@@ -479,7 +487,7 @@ export default function ApplyNow() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full "
                     size="lg"
                   >
                     {isSubmitting ? "Sending..." : "Submit"}

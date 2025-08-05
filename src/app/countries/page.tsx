@@ -132,7 +132,7 @@ export default function Countries() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-[#ff814f] ">
+      <section className="py-20 bg-[#fa4d32] ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

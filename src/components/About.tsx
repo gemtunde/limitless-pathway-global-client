@@ -39,7 +39,7 @@ const About = () => {
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               Welcome to Limitless Global Pathways – Your Gateway to
-              <span className="text-[#ff814f]"> Global Education</span>
+              <span className="text-[#fa4d32]"> Global Education</span>
             </h2>
 
             <p className="text-lg text-gray-600 mb-8">
@@ -69,7 +69,7 @@ const About = () => {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   className="flex items-center space-x-2"
                 >
-                  <CheckCircle className="h-5 w-5 text-[#ff814f] flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-[#fa4d32] flex-shrink-0" />
                   <span className="text-gray-700">{feature}</span>
                 </motion.div>
               ))}
@@ -111,7 +111,7 @@ const About = () => {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   className="text-center p-4 bg-gray-50 rounded-lg"
                 >
-                  <stat.icon className="h-8 w-8 text-[#ff814f] mx-auto mb-2" />
+                  <stat.icon className="h-8 w-8 text-[#fa4d32] mx-auto mb-2" />
                   <div className="text-2xl font-bold text-gray-900">
                     {stat.number}
                   </div>

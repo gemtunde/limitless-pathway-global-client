@@ -95,7 +95,7 @@ export default function Services() {
             >
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 Welcome to Limitless Global Pathways -{" "}
-                <span className="text-[#ff814f]">
+                <span className="text-[#fa4d32]">
                   Your Gateway to International Education
                 </span>
               </h2>
@@ -211,7 +211,7 @@ export default function Services() {
                 >
                   <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <CardHeader className="text-center">
-                      <div className="bg-[#ff814f] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                      <div className="bg-[#fa4d32] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
                         {"0" + (index + 1)}
                       </div>
                       {/* <div
@@ -227,7 +227,7 @@ export default function Services() {
                     </CardHeader>
                     <CardContent>
                       <p className="flex items-center text-sm text-gray-600">
-                        <CheckCircle className="h-4 w-4 text-[#ff814f] mr-2 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-[#fa4d32] mr-2 flex-shrink-0" />
                         {service?.features || "Explore our features"}
                       </p>
 
@@ -281,7 +281,7 @@ export default function Services() {
               >
                 <Card className="text-center border-0 shadow-lg">
                   <CardHeader>
-                    <div className="bg-[#ff814f] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                    <div className="bg-[#fa4d32] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
                       {item.step}
                     </div>
                     <CardTitle className="text-xl font-semibold text-gray-900">
@@ -301,7 +301,7 @@ export default function Services() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-[#ff814f]">
+      <section className="py-20 bg-[#fa4d32]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

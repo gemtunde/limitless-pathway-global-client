@@ -136,7 +136,7 @@ export default function About() {
                   onClick={() => handleNav("/contact")}
                   size="lg"
                   // variant="secondary"
-                  className="border-white text-white hover:bg-white hover:text-[#ff814f] "
+                  className="border-white text-white hover:bg-white hover:text-[#fa4d32] "
                 >
                   Contact Us
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -193,7 +193,7 @@ export default function About() {
               >
                 <Card className="h-full text-center border-0 shadow-lg">
                   <CardHeader>
-                    <div className="bg-[#ff814f] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-[#fa4d32] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                       <value.icon className="h-8 w-8 text-white" />
                     </div>
                     <CardTitle className="text-xl font-semibold text-gray-900">

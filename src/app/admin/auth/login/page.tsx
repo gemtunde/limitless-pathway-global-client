@@ -59,14 +59,27 @@ export default function Login() {
           response.data.data.message || "Login failed. Please try again."
         );
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      if (error instanceof Error) {
-        toast.error(error.message || "An error occurred during login.");
-      } else {
-        toast.error("An unexpected error occurred. Please try again.");
-      }
-      return;
+    } catch (error: unknown) {
+      console.log("Caught error in component:", error);
+
+      // Safe error message extraction
+      // let errorMessage = "An unexpected error occurred";
+
+      // if (error.response) {
+      //   // Server responded with error
+      //   errorMessage =
+      //     error.response.data?.message ||
+      //     error.response.data?.error ||
+      //     `Server error: ${error.response.status}`;
+      // } else if (error.request) {
+      //   // Network error
+      //   errorMessage = "Network error. Please check your connection.";
+      // } else {
+      //   // Other error
+      //   errorMessage = error.message || "An unexpected error occurred";
+      // }
+
+      // toast.error(errorMessage);
     }
   };
 
@@ -182,7 +195,7 @@ export default function Login() {
                     </div>
                     <Link
                       href="/admin/auth/forgot-password"
-                      className="text-sm text-blue-600 hover:text-blue-500"
+                      className="text-sm text-[#fa4d32] hover:text-[#fa4d32]"
                     >
                       Forgot password?
                     </Link>
@@ -191,7 +204,7 @@ export default function Login() {
                   <Button
                     type="submit"
                     disabled={login.isPending}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full"
                   >
                     {login.isPending ? (
                       <>
@@ -209,7 +222,7 @@ export default function Login() {
                     Don&apos;t have an account?{" "}
                     <Link
                       href="/admin/auth/register"
-                      className="text-blue-600 hover:text-blue-500 font-medium"
+                      className="text-[#fa4d32] hover:text-[#fa4d32] font-medium"
                     >
                       Sign up
                     </Link>

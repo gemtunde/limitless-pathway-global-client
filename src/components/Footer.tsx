@@ -52,14 +52,14 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Featured Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-white hover:text-[#ff814f]">
+                <Link href="/about" className="text-white hover:text-[#fa4d32]">
                   About Us
                 </Link>
               </li>
               <li>
                 <Link
                   href="/services"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Services
                 </Link>
@@ -67,7 +67,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/scholarships"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Scholarships
                 </Link>
@@ -75,7 +75,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/countries"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Countries
                 </Link>
@@ -83,7 +83,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/contact"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Contact
                 </Link>
@@ -96,27 +96,27 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/blog" className="text-white hover:text-[#ff814f]">
+                <Link href="/blog" className="text-white hover:text-[#fa4d32]">
                   Blog
                 </Link>
               </li>
               <li>
                 <Link
                   href="/events"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-white hover:text-[#ff814f]">
+                <Link href="/faq" className="text-white hover:text-[#fa4d32]">
                   FAQs
                 </Link>
               </li>
               <li>
                 <Link
                   href="/contact"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Support
                 </Link>
@@ -124,7 +124,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/privacy-policy"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Privacy
                 </Link>
@@ -139,7 +139,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/countries"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   United Kingdom
                 </Link>
@@ -147,7 +147,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/countries"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   United States
                 </Link>
@@ -155,7 +155,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/countries"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Canada
                 </Link>
@@ -163,7 +163,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/countries"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Ireland
                 </Link>
@@ -171,7 +171,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/countries"
-                  className="text-white hover:text-[#ff814f]"
+                  className="text-white hover:text-[#fa4d32]"
                 >
                   Wales
                 </Link>
@@ -182,7 +182,7 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-yellow-800 mt-8 pt-8 flex flex-col md:flex-row md:justify-between items-center">
-          <p className="text-[#ff814f] font-semibold text-sm mb-4 md:mb-0">
+          <p className="text-[#fa4d32] font-semibold text-sm mb-4 md:mb-0">
             © 2025 Limitless Global Pathways. All rights reserved.
           </p>
           <div className="flex space-x-6">

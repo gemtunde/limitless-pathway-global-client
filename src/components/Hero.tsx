@@ -67,7 +67,7 @@ const Hero = () => {
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             YOUR GLOBAL FUTURE
-            <span className="block text-[#ff814f]">STARTS HERE</span>
+            <span className="block text-[#fa4d32]">STARTS HERE</span>
           </h1>
 
           <p className="text-xl text-white mb-8 max-w-2xl">
@@ -86,7 +86,7 @@ const Hero = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-black hover:bg-white hover:text-[#ff814f] "
+              className="border-white text-black hover:bg-white hover:text-[#fa4d32] "
               onClick={() => handleNav("https://www.youtube.com/@Rkycareers")}
             >
               <Play className="mr-2 h-5 w-5" />

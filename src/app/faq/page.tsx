@@ -15,6 +15,7 @@ import { useFaq } from "@/hooks/admin/queries/faq";
 import { IFaq } from "../admin/faq/page";
 import { Badge } from "@/components/ui/badge";
 import HeroSection from "@/components/HeroSection";
+import { useRouter } from "next/navigation";
 
 // const faqData = [
 //   {
@@ -92,13 +93,15 @@ import HeroSection from "@/components/HeroSection";
 
 export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<string | null>(null);
-
+  const router = useRouter();
   const toggleIndex = (id: string) => {
     setOpenIndex((prev) => (prev === id ? null : id));
   };
   const { data: faqData, isLoading } = useFaq();
   const faqs = faqData?.data || [];
-  console.log("FAQs:", faqs);
+  const handleNav = (path: string) => {
+    router.push(path);
+  };
 
   return (
     <div className="min-h-screen">
@@ -142,7 +145,7 @@ export default function FAQPage() {
                         />
                       </CollapsibleTrigger>
                       <CollapsibleContent className=" flex flex-col gap-2 p-6 pb-4 text-gray-700 text-sm whitespace-pre-line">
-                        <Badge className="bg-[#ff814f] text-white py-2 px-4 w-fit">
+                        <Badge className="bg-[#fa4d32] text-white py-2 px-4 w-fit">
                           {faq.category}
                         </Badge>
                         {faq.answer}
@@ -156,7 +159,7 @@ export default function FAQPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#ff814f]">
+      <section className="py-20 bg-[#fa4d32]">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -170,7 +173,12 @@ export default function FAQPage() {
               Reach out to our expert advisors for personalized guidance and
               support on your study abroad journey.
             </p>
-            <Button variant="outline" className=" text-black" size="lg">
+            <Button
+              onClick={() => handleNav("/contact")}
+              variant="outline"
+              className=" text-black"
+              size="lg"
+            >
               Contact Us
             </Button>
           </motion.div>

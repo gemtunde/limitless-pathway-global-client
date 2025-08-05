@@ -345,15 +345,15 @@ export default function BlogPage() {
       key: "author",
       label: "Author",
     },
-    {
-      key: "createdAt",
-      label: "Created",
-      sortable: true,
-      render: (value: string | number | Date | undefined) => {
-        //const date = value as Date;
-        return formatDate(value as string);
-      },
-    },
+    // {
+    //   key: "createdAt",
+    //   label: "Created",
+    //   sortable: true,
+    //   render: (value: string | number | Date | undefined) => {
+    //     //const date = value as Date;
+    //     return formatDate(value as string);
+    //   },
+    // },
   ];
 
   const filterOptions = [

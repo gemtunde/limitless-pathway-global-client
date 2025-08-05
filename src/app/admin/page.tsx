@@ -61,7 +61,7 @@ export default function AdminDashboard() {
             <CardTitle className="text-sm font-medium">
               Total Services
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-[#fa4d32]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -82,7 +82,7 @@ export default function AdminDashboard() {
             <CardTitle className="text-sm font-medium">
               Total Scholarships
             </CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Award className="h-4 w-4 text-[#fa4d32]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Events</CardTitle>
-            <Globe className="h-4 w-4 text-muted-foreground" />
+            <Globe className="h-4 w-4 text-[#fa4d32]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Countries</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
+            <Mail className="h-4 w-4 text-[#fa4d32]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -165,8 +165,8 @@ export default function AdminDashboard() {
                     className="flex items-center justify-between p-4 rounded-lg border"
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-blue-600" />
+                      <div className="w-10 h-10 rounded-full bg-[#fa4d32] flex items-center justify-center">
+                        <Users className="h-5 w-5 text-white" />
                       </div>
                       <div>
                         <p className="font-medium">{service.title}</p>
@@ -229,8 +229,8 @@ export default function AdminDashboard() {
           <CardContent className="space-y-4">
             <div className="grid gap-2">
               <Button asChild className="w-full justify-start">
-                <Link href="/admin/applications">
-                  <Users className="mr-2 h-4 w-4" />
+                <Link href="/admin">
+                  <Users className="mr-2 h-4 w-4 text-[#fa4d32]" />
                   Manage Applications
                 </Link>
               </Button>
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
                 className="w-full justify-start"
               >
                 <Link href="/admin/scholarships">
-                  <Award className="mr-2 h-4 w-4" />
+                  <Award className="mr-2 h-4 w-4 text-[#fa4d32]" />
                   Add Scholarship
                 </Link>
               </Button>
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
                 className="w-full justify-start"
               >
                 <Link href="/admin/blog">
-                  <FileText className="mr-2 h-4 w-4" />
+                  <FileText className="mr-2 h-4 w-4 text-[#fa4d32] " />
                   Create Blog Post
                 </Link>
               </Button>
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
                 className="w-full justify-start"
               >
                 <Link href="/admin/events">
-                  <Calendar className="mr-2 h-4 w-4" />
+                  <Calendar className="mr-2 h-4 w-4 text-[#fa4d32]" />
                   Schedule Event
                 </Link>
               </Button>
@@ -318,8 +318,8 @@ export default function AdminDashboard() {
                     className="flex items-center justify-between p-3 rounded-lg border"
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                        <Award className="h-5 w-5 text-green-600" />
+                      <div className="w-10 h-10 rounded-full bg-[#fa4d32] flex items-center justify-center">
+                        <Award className="h-5 w-5 text-white" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">
@@ -392,7 +392,7 @@ export default function AdminDashboard() {
                     className="flex items-center justify-between p-3 rounded-lg border"
                   >
                     <div className="flex items-center space-x-3">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <Calendar className="h-4 w-4 text-[#fa4d32]" />
                       <div>
                         <p className="font-medium text-sm">{event.title}</p>
                         <p className="font-medium text-sm">
