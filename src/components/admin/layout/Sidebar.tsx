@@ -109,7 +109,7 @@ const menuItems: MenuItem[] = [
         href: "/admin/change-password",
         icon: Home,
       },
-      { name: "Create User", href: "//admin/create-user", icon: User },
+      // { name: "Create User", href: "//admin/create-user", icon: User },
     ],
   },
 ];
