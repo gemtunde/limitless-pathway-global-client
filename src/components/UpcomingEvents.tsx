@@ -98,7 +98,7 @@ const UpcomingEvents = () => {
                   <CardContent className="flex-1 flex flex-col">
                     {/* Content wrapper that will grow to fill available space */}
                     <div className="space-y-4 flex-1">
-                      <p>{event.description}</p>
+                      <p className="line-clamp-4">{event.description}</p>
                       <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                         <div className="flex items-center">
                           <DollarSign className="w-4 h-4 mr-2" />
