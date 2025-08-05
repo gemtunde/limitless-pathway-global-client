@@ -127,7 +127,7 @@ const UpcomingEvents = () => {
                     {/* Button container that stays at the bottom */}
                     <div className="mt-4 pt-4">
                       <Button
-                        onClick={() => handleNav("/apply-now")}
+                        onClick={() => handleNav("/apply-event")}
                         className="w-full"
                       >
                         Apply Now
