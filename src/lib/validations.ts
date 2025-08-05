@@ -58,6 +58,23 @@ export const registerFormSchema = z
 
 export type RegisterFormData = z.infer<typeof registerFormSchema>;
 
+export const ProfileFormSchema = z.object({
+  firstName: z.string().min(2, "First Name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last Name must be at least 2 characters"),
+  email: z.string().optional(),
+  image: z.string().optional(),
+  // password: z.string().min(6, "Password must be at least 6 characters"),
+  // confirmPassword: z
+  //   .string()
+  //   .min(6, "Password must be at least 6 characters"),
+});
+// .refine((data) => data.password === data.confirmPassword, {
+//   message: "Passwords don't match",
+//   path: ["confirmPassword"],
+// });
+
+export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
+
 export const resetPasswordFormSchema = z
   .object({
     password: z.string().min(6, "Password must be at least 6 characters"),
@@ -70,4 +87,21 @@ export const resetPasswordFormSchema = z
     path: ["confirmPassword"],
   });
 
+//currentPassword, newPassword
 export type ResetPasswordFormData = z.infer<typeof resetPasswordFormSchema>;
+export const ChangePasswordFormSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    confirmNewPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Passwords don't match",
+    path: ["confirmNewPassword"],
+  });
+
+export type ChangePasswordFormData = z.infer<typeof ChangePasswordFormSchema>;

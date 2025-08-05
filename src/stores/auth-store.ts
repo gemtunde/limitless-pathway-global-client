@@ -8,6 +8,7 @@ export interface User {
   email: string;
   isEmailVerified: boolean;
   token?: string;
+  image?: string;
 }
 
 interface AuthState {

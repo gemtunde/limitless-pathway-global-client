@@ -12,6 +12,7 @@ export type LoginResponseType = {
       lastName: string;
       email: string;
       isEmailVerified: boolean;
+      image?: string;
     };
   };
 };

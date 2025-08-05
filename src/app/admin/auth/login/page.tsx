@@ -45,9 +45,9 @@ export default function Login() {
       const response = await login.mutateAsync(data);
       if (response.status === 200) {
         console.log("Login successful:", response.data.data);
-        const { user, token } = response.data.data; // Adjust based on your API response structure
+        const { user, token } = response.data.data;
         setAuth(user, token);
-        console.log("USER ====>>Login successful TKEN:", user, token);
+
         toast.success(
           response.data.data.message || "User has been logged in successfully!"
         );
@@ -59,27 +59,14 @@ export default function Login() {
           response.data.data.message || "Login failed. Please try again."
         );
       }
-    } catch (error: unknown) {
-      console.log("Caught error in component:", error);
-
-      // Safe error message extraction
-      // let errorMessage = "An unexpected error occurred";
-
-      // if (error.response) {
-      //   // Server responded with error
-      //   errorMessage =
-      //     error.response.data?.message ||
-      //     error.response.data?.error ||
-      //     `Server error: ${error.response.status}`;
-      // } else if (error.request) {
-      //   // Network error
-      //   errorMessage = "Network error. Please check your connection.";
-      // } else {
-      //   // Other error
-      //   errorMessage = error.message || "An unexpected error occurred";
-      // }
-
-      // toast.error(errorMessage);
+    } catch (error) {
+      console.error("Registration error:", error);
+      if (error instanceof Error) {
+        toast.error(error.message || "An error occurred during registration.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+      return;
     }
   };
 

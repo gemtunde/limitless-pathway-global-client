@@ -49,23 +49,17 @@ export function Header() {
               <Sidebar />
             </SheetContent>
           </Sheet>
-
-          {/* <div className="relative w-64">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search..." className="pl-8" />
-          </div> */}
         </div>
 
         <div className="flex items-center space-x-4">
-          {/* <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-          </Button> */}
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/farida.jpeg" alt={user.firstName} />
+                  <AvatarImage
+                    src={user.image || "/logo-4.png"}
+                    alt={user.firstName}
+                  />
                   <AvatarFallback>{getInitials(user.firstName)}</AvatarFallback>
                 </Avatar>
               </Button>

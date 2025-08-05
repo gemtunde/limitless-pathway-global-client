@@ -10,13 +10,13 @@ import { useState } from "react";
 import {
   Home,
   Users,
-  //GraduationCap,
+  GraduationCap,
   MapPin,
   Award,
   Calendar,
   FileText,
   MessageSquare,
-  //Settings,
+  User,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -30,6 +30,7 @@ type MenuItem = {
 type SubMenuItem = {
   name: string;
   href: string;
+  icon: React.ElementType;
 };
 
 const menuItems: MenuItem[] = [
@@ -92,6 +93,24 @@ const menuItems: MenuItem[] = [
     name: "FAQs",
     href: "/admin/faq",
     icon: MessageSquare,
+  },
+  {
+    name: "Settings",
+    href: "/admin/update-profile",
+    icon: Settings,
+    submenu: [
+      {
+        name: "User Profile",
+        href: "/admin/update-profile",
+        icon: GraduationCap,
+      },
+      {
+        name: "Change Password",
+        href: "/admin/change-password",
+        icon: Home,
+      },
+      { name: "Create User", href: "//admin/create-user", icon: User },
+    ],
   },
 ];
 export function Sidebar({ className }: { className?: string }) {
@@ -170,11 +189,16 @@ export function Sidebar({ className }: { className?: string }) {
                         key={subItem.href}
                         href={subItem.href}
                         className={cn(
-                          "flex items-center space-x-2 px-4 py-2 text-sm rounded-md hover:bg-muted",
-                          pathname === subItem.href && "bg-muted font-semibold"
+                          "flex items-center space-x-2 px-4 py-2 my-4 text-sm rounded-md hover:bg-muted",
+                          pathname === subItem.href &&
+                            "bg-muted font-semibold text-[#fa4d32]"
                         )}
                       >
-                        <span className="ml-4">{subItem.name}</span>
+                        <div className="flex items-center space-x-2">
+                          <subItem.icon className="h-4 w-4" />
+                          <span>{subItem.name}</span>
+                        </div>
+                        {/* <span className="ml-4">{subItem.name}</span> */}
                       </Link>
                     ))}
                   </div>
